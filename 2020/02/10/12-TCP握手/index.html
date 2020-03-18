@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    12-TCP握手 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-12-TCP握手" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  12-TCP握手
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/10/12-TCP%E6%8F%A1%E6%89%8B/" class="article-date">
+  <time datetime="2020-02-10T09:22:27.000Z" itemprop="datePublished">2020-02-10</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/">网络通信</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">969字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">3分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="tcp的3次握手"><a href="#tcp的3次握手" class="headerlink" title="tcp的3次握手"></a>tcp的3次握手</h2><a id="more"></a>
+<p><img src="/2020/02/10/12-TCP%E6%8F%A1%E6%89%8B/tcp%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B.png" alt></p>
+<h2 id="tcp的4次挥手"><a href="#tcp的4次挥手" class="headerlink" title="tcp的4次挥手"></a>tcp的4次挥手</h2><p><img src="/2020/02/10/12-TCP%E6%8F%A1%E6%89%8B/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E3%80%81%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B.png" alt></p>
+<h2 id="tcp长连接和短连接"><a href="#tcp长连接和短连接" class="headerlink" title="tcp长连接和短连接"></a>tcp长连接和短连接</h2><p>TCP在真正的读写操作之前，server与client之间必须建立一个连接，</p>
+<p>当读写操作完成后，双方不再需要这个连接时它们可以释放这个连接，</p>
+<p>连接的建立通过三次握手，释放则需要四次握手，</p>
+<p>所以说每个连接的建立都是需要资源消耗和时间消耗的。</p>
+<h3 id="TCP通信的整个过程，如下图"><a href="#TCP通信的整个过程，如下图" class="headerlink" title="TCP通信的整个过程，如下图:"></a>TCP通信的整个过程，如下图:</h3><p><img src="/2020/02/10/12-TCP%E6%8F%A1%E6%89%8B/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E3%80%81%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B.png" alt></p>
+<h2 id="1-TCP短连接"><a href="#1-TCP短连接" class="headerlink" title="1. TCP短连接"></a>1. TCP短连接</h2><p>模拟一种TCP短连接的情况:</p>
+<ol>
+<li>client 向server 发起连接请求</li>
+<li>server 接到请求，双方建立连接</li>
+<li>client 向server 发送消息</li>
+<li>server 回应client</li>
+<li>一次读写完成，此时双方任何一个都可以发起close 操作</li>
+</ol>
+<p>在步骤5中，一般都是client 先发起close 操作。当然也不排除有特殊的情况。</p>
+<p>从上面的描述看，短连接一般只会在client/server 间传递一次读写操作！</p>
+<h2 id="2-TCP长连接"><a href="#2-TCP长连接" class="headerlink" title="2. TCP长连接"></a>2. TCP长连接</h2><p>再模拟一种长连接的情况:</p>
+<ol>
+<li>client 向server 发起连接</li>
+<li>server 接到请求，双方建立连接</li>
+<li>client 向server 发送消息</li>
+<li>server 回应client</li>
+<li>一次读写完成，连接不关闭</li>
+<li>后续读写操作…</li>
+<li>长时间操作之后client发起关闭请求</li>
+</ol>
+<h2 id="3-TCP长-短连接操作过程"><a href="#3-TCP长-短连接操作过程" class="headerlink" title="3. TCP长/短连接操作过程"></a>3. TCP长/短连接操作过程</h2><h3 id="3-1-短连接的操作步骤是："><a href="#3-1-短连接的操作步骤是：" class="headerlink" title="3.1 短连接的操作步骤是："></a>3.1 短连接的操作步骤是：</h3><p>建立连接——数据传输——关闭连接…建立连接——数据传输——关闭连接</p>
+<p><img src="/2020/02/10/12-TCP%E6%8F%A1%E6%89%8B/%E7%9F%AD%E8%BF%9E%E6%8E%A5.png" alt></p>
+<h3 id="3-2-长连接的操作步骤是："><a href="#3-2-长连接的操作步骤是：" class="headerlink" title="3.2 长连接的操作步骤是："></a>3.2 长连接的操作步骤是：</h3><p>建立连接——数据传输…（保持连接）…数据传输——关闭连接</p>
+<p><img src="/2020/02/10/12-TCP%E6%8F%A1%E6%89%8B/%E9%95%BF%E8%BF%9E%E6%8E%A5.png" alt></p>
+<h2 id="4-TCP长-短连接的优点和缺点"><a href="#4-TCP长-短连接的优点和缺点" class="headerlink" title="4. TCP长/短连接的优点和缺点"></a>4. TCP长/短连接的优点和缺点</h2><ul>
+<li><p>长连接可以省去较多的TCP建立和关闭的操作，减少浪费，节约时间。</p>
+<p>对于频繁请求资源的客户来说，较适用长连接。</p>
+</li>
+<li><p>client与server之间的连接如果一直不关闭的话，会存在一个问题，</p>
+<p>随着客户端连接越来越多，server早晚有扛不住的时候，这时候server端需要采取一些策略，</p>
+<p>如关闭一些长时间没有读写事件发生的连接，这样可以避免一些恶意连接导致server端服务受损；</p>
+<p>如果条件再允许就可以以客户端机器为颗粒度，限制每个客户端的最大长连接数，</p>
+<p>这样可以完全避免某个蛋疼的客户端连累后端服务。</p>
+</li>
+<li><p>短连接对于服务器来说管理较为简单，存在的连接都是有用的连接，不需要额外的控制手段。</p>
+</li>
+<li><p>但如果客户请求频繁，将在TCP的建立和关闭操作上浪费时间和带宽。</p>
+</li>
+</ul>
+<h2 id="5-TCP长-短连接的应用场景"><a href="#5-TCP长-短连接的应用场景" class="headerlink" title="5. TCP长/短连接的应用场景"></a>5. TCP长/短连接的应用场景</h2><ul>
+<li><p>长连接多用于操作频繁，点对点的通讯，而且连接数不能太多情况。</p>
+<p>每个TCP连接都需要三次握手，这需要时间，如果每个操作都是先连接，</p>
+<p>再操作的话那么处理速度会降低很多，所以每个操作完后都不断开，</p>
+<p>再次处理时直接发送数据包就OK了，不用建立TCP连接。</p>
+<p>例如：数据库的连接用长连接，如果用短连接频繁的通信会造成socket错误，</p>
+<p>而且频繁的socket 创建也是对资源的浪费。</p>
+</li>
+<li><p>而像WEB网站的http服务一般都用短链接，因为长连接对于服务端来说会耗费一定的资源，</p>
+<p>而像WEB网站这么频繁的成千上万甚至上亿客户端的连接用短连接会更省一些资源，</p>
+<p>如果用长连接，而且同时有成千上万的用户，如果每个用户都占用一个连接的话，</p>
+<p>那可想而知吧。所以并发量大，但每个用户无需频繁操作情况下需用短连好。</p>
+</li>
+</ul>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/10/12-TCP%E6%8F%A1%E6%89%8B/" data-id="ck6m69dt3000y68vv56n9bhmu"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" rel="tag">网络通信</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/10/13-tcp-ip%E7%AE%80%E4%BB%8B/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            13-tcp-ip简介
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/10/11-%E6%A1%88%E4%BE%8B-%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BD%E5%99%A8/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">11-案例:文件下载器</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

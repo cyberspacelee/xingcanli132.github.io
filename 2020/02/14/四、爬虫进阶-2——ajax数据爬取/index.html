@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    四、爬虫进阶(2）——ajax数据爬取 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-四、爬虫进阶-2——ajax数据爬取" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  四、爬虫进阶(2）——ajax数据爬取
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/14/%E5%9B%9B%E3%80%81%E7%88%AC%E8%99%AB%E8%BF%9B%E9%98%B6-2%E2%80%94%E2%80%94ajax%E6%95%B0%E6%8D%AE%E7%88%AC%E5%8F%96/" class="article-date">
+  <time datetime="2020-02-14T12:21:17.000Z" itemprop="datePublished">2020-02-14</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/">网络爬虫</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">2.2k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">9分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="动态网页数据抓取"><a href="#动态网页数据抓取" class="headerlink" title="动态网页数据抓取"></a>动态网页数据抓取</h2><a id="more"></a>
+
+<h3 id="什么是AJAX："><a href="#什么是AJAX：" class="headerlink" title="什么是AJAX："></a>什么是AJAX：</h3><p>AJAX（Asynchronouse JavaScript And XML）异步JavaScript和XML。过在后台与服务器进行少量数据交换，Ajax 可以使网页实现异步更新。这意味着可以在不重新加载整个网页的情况下，对网页的某部分进行更新。传统的网页（不使用Ajax）如果需要更新内容，必须重载整个网页页面。因为传统的在传输数据格式方面，使用的是<code>XML</code>语法。因此叫做<code>AJAX</code>，其实现在数据交互基本上都是使用<code>JSON</code>。使用AJAX加载的数据，即使使用了JS，将数据渲染到了浏览器中，在<code>右键-&gt;查看网页源代码</code>还是不能看到通过ajax加载的数据，只能看到使用这个url加载的html代码。</p>
+<h3 id="获取ajax数据的方式："><a href="#获取ajax数据的方式：" class="headerlink" title="获取ajax数据的方式："></a>获取ajax数据的方式：</h3><ol>
+<li>直接分析ajax调用的接口。然后通过代码请求这个接口。</li>
+<li>使用Selenium+chromedriver模拟浏览器行为获取数据。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>分析接口</td>
+<td>直接可以请求到数据。不需要做一些解析工作。代码量少，性能高。</td>
+<td>分析接口比较复杂，特别是一些通过js混淆的接口，要有一定的js功底。容易被发现是爬虫。</td>
+</tr>
+<tr>
+<td>selenium</td>
+<td>直接模拟浏览器的行为。浏览器能请求到的，使用selenium也能请求到。爬虫更稳定。</td>
+<td>代码量多。性能低。</td>
+</tr>
+</tbody></table>
+<h2 id="Selenium-chromedriver获取动态数据"><a href="#Selenium-chromedriver获取动态数据" class="headerlink" title="Selenium+chromedriver获取动态数据"></a>Selenium+chromedriver获取动态数据</h2><p><code>Selenium</code>相当于是一个机器人。可以模拟人类在浏览器上的一些行为，自动处理浏览器上的一些行为，比如点击，填充数据，删除cookie等。<code>chromedriver</code>是一个驱动<code>Chrome</code>浏览器的驱动程序，使用他才可以驱动浏览器。当然针对不同的浏览器有不同的driver。以下列出了不同浏览器及其对应的driver：</p>
+<ol>
+<li>Chrome：<a href="https://sites.google.com/a/chromium.org/chromedriver/downloads" target="_blank" rel="noopener">https://sites.google.com/a/chromium.org/chromedriver/downloads</a></li>
+<li>Firefox：<a href="https://github.com/mozilla/geckodriver/releases" target="_blank" rel="noopener">https://github.com/mozilla/geckodriver/releases</a></li>
+<li>Edge：<a href="https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/" target="_blank" rel="noopener">https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/</a></li>
+<li>Safari：<a href="https://webkit.org/blog/6900/webdriver-support-in-safari-10/" target="_blank" rel="noopener">https://webkit.org/blog/6900/webdriver-support-in-safari-10/</a></li>
+</ol>
+<h3 id="安装Selenium和chromedriver："><a href="#安装Selenium和chromedriver：" class="headerlink" title="安装Selenium和chromedriver："></a>安装Selenium和chromedriver：</h3><ol>
+<li><p>安装 Selenium：Selenium有很多语言的版本，有java、ruby、python等。我们下载python版本的就可以了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install selenium</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装<code>chromedriver</code>：下载完成后，放到不需要权限的纯英文目录下就可以了。</p>
+</li>
+</ol>
+<h3 id="快速入门："><a href="#快速入门：" class="headerlink" title="快速入门："></a>快速入门：</h3><p>现在以一个简单的获取百度首页的例子来讲下<code>Selenium</code>和<code>chromedriver</code>如何快速入门：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from selenium import webdriver</span><br><span class="line"></span><br><span class="line"># chromedriver的绝对路径</span><br><span class="line">driver_path &#x3D; r&#39;D:\ProgramApp\chromedriver\chromedriver.exe&#39;</span><br><span class="line"></span><br><span class="line"># 初始化一个driver，并且指定chromedriver的路径</span><br><span class="line">driver &#x3D; webdriver.Chrome(executable_path&#x3D;driver_path)</span><br><span class="line"># 请求网页</span><br><span class="line">driver.get(&quot;https:&#x2F;&#x2F;www.baidu.com&#x2F;&quot;)</span><br><span class="line"># 通过page_source获取网页源代码</span><br><span class="line">print(driver.page_source)</span><br></pre></td></tr></table></figure>
+
+<h2 id="selenium常用操作："><a href="#selenium常用操作：" class="headerlink" title="selenium常用操作："></a>selenium常用操作：</h2><p>更多教程请参考：<a href="http://selenium-python.readthedocs.io/installation.html#introduction" target="_blank" rel="noopener">http://selenium-python.readthedocs.io/installation.html#introduction</a></p>
+<h3 id="关闭页面："><a href="#关闭页面：" class="headerlink" title="关闭页面："></a>关闭页面：</h3><ol>
+<li><code>driver.close()</code>：关闭当前页面。</li>
+<li><code>driver.quit()</code>：退出整个浏览器。</li>
+</ol>
+<h3 id="定位元素："><a href="#定位元素：" class="headerlink" title="定位元素："></a>定位元素：</h3><ol>
+<li><p><code>find_element_by_id</code>：根据id来查找某个元素。等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">submitTag &#x3D; driver.find_element_by_id(&#39;su&#39;)</span><br><span class="line">submitTag1 &#x3D; driver.find_element(By.ID,&#39;su&#39;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>find_element_by_class_name</code>：根据类名查找元素。 等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">submitTag &#x3D; driver.find_element_by_class_name(&#39;su&#39;)</span><br><span class="line">submitTag1 &#x3D; driver.find_element(By.CLASS_NAME,&#39;su&#39;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>find_element_by_name</code>：根据name属性的值来查找元素。等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">submitTag &#x3D; driver.find_element_by_name(&#39;email&#39;)</span><br><span class="line">submitTag1 &#x3D; driver.find_element(By.NAME,&#39;email&#39;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>find_element_by_tag_name</code>：根据标签名来查找元素。等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">submitTag &#x3D; driver.find_element_by_tag_name(&#39;div&#39;)</span><br><span class="line">submitTag1 &#x3D; driver.find_element(By.TAG_NAME,&#39;div&#39;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>find_element_by_xpath</code>：根据xpath语法来获取元素。等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">submitTag &#x3D; driver.find_element_by_xpath(&#39;&#x2F;&#x2F;div&#39;)</span><br><span class="line">submitTag1 &#x3D; driver.find_element(By.XPATH,&#39;&#x2F;&#x2F;div&#39;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>find_element_by_css_selector</code>：根据css选择器选择元素。等价于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">submitTag &#x3D; driver.find_element_by_css_selector(&#39;&#x2F;&#x2F;div&#39;)</span><br><span class="line">submitTag1 &#x3D; driver.find_element(By.CSS_SELECTOR,&#39;&#x2F;&#x2F;div&#39;)</span><br></pre></td></tr></table></figure>
+
+<p>要注意，<code>find_element</code>是获取第一个满足条件的元素。<code>find_elements</code>是获取所有满足条件的元素。</p>
+</li>
+</ol>
+<h3 id="操作表单元素："><a href="#操作表单元素：" class="headerlink" title="操作表单元素："></a>操作表单元素：</h3><ol>
+<li><p>操作输入框：分为两步。第一步：找到这个元素。第二步：使用<code>send_keys(value)</code>，将数据填充进去。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">inputTag &#x3D; driver.find_element_by_id(&#39;kw&#39;)</span><br><span class="line">inputTag.send_keys(&#39;python&#39;)</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>clear</code>方法可以清除输入框中的内容。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">inputTag.clear()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>操作checkbox：因为要选中<code>checkbox</code>标签，在网页中是通过鼠标点击的。因此想要选中<code>checkbox</code>标签，那么先选中这个标签，然后执行<code>click</code>事件。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rememberTag &#x3D; driver.find_element_by_name(&quot;rememberMe&quot;)</span><br><span class="line">rememberTag.click()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>选择select：select元素不能直接点击。因为点击后还需要选中元素。这时候selenium就专门为select标签提供了一个类<code>selenium.webdriver.support.ui.Select</code>。将获取到的元素当成参数传到这个类中，创建这个对象。以后就可以使用这个对象进行选择了。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from selenium.webdriver.support.ui import Select</span><br><span class="line"># 选中这个标签，然后使用Select创建对象</span><br><span class="line">selectTag &#x3D; Select(driver.find_element_by_name(&quot;jumpMenu&quot;))</span><br><span class="line"># 根据索引选择</span><br><span class="line">selectTag.select_by_index(1)</span><br><span class="line"># 根据值选择</span><br><span class="line">selectTag.select_by_value(&quot;http:&#x2F;&#x2F;www.95yueba.com&quot;)</span><br><span class="line"># 根据可视的文本选择</span><br><span class="line">selectTag.select_by_visible_text(&quot;95秀客户端&quot;)</span><br><span class="line"># 取消选中所有选项</span><br><span class="line">selectTag.deselect_all()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>操作按钮：操作按钮有很多种方式。比如单击、右击、双击等。这里讲一个最常用的。就是点击。直接调用<code>click</code>函数就可以了。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">inputTag &#x3D; driver.find_element_by_id(&#39;su&#39;)</span><br><span class="line">inputTag.click()</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="行为链："><a href="#行为链：" class="headerlink" title="行为链："></a>行为链：</h3><p>有时候在页面中的操作可能要有很多步，那么这时候可以使用鼠标行为链类<code>ActionChains</code>来完成。比如现在要将鼠标移动到某个元素上并执行点击事件。那么示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">inputTag &#x3D; driver.find_element_by_id(&#39;kw&#39;)</span><br><span class="line">submitTag &#x3D; driver.find_element_by_id(&#39;su&#39;)</span><br><span class="line"></span><br><span class="line">actions &#x3D; ActionChains(driver)</span><br><span class="line">actions.move_to_element(inputTag)</span><br><span class="line">actions.send_keys_to_element(inputTag,&#39;python&#39;)</span><br><span class="line">actions.move_to_element(submitTag)</span><br><span class="line">actions.click(submitTag)</span><br><span class="line">actions.perform()</span><br></pre></td></tr></table></figure>
+
+<p>还有更多的鼠标相关的操作。</p>
+<ul>
+<li>click_and_hold(element)：点击但不松开鼠标。</li>
+<li>context_click(element)：右键点击。</li>
+<li>double_click(element)：双击。 更多方法请参考：<a href="http://selenium-python.readthedocs.io/api.html" target="_blank" rel="noopener">http://selenium-python.readthedocs.io/api.html</a></li>
+</ul>
+<h3 id="Cookie操作："><a href="#Cookie操作：" class="headerlink" title="Cookie操作："></a>Cookie操作：</h3><ol>
+<li><p>获取所有的 cookie：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">for cookie in driver.get_cookies():</span><br><span class="line">    print(cookie)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>根据cookie的key获取value：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">value &#x3D; driver.get_cookie(key)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除所有的cookie：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">driver.delete_all_cookies()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除某个 cookie：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">driver.delete_cookie(key)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="页面等待："><a href="#页面等待：" class="headerlink" title="页面等待："></a>页面等待：</h3><p>现在的网页越来越多采用了 Ajax 技术，这样程序便不能确定何时某个元素完全加载出来了。如果实际页面等待时间过长导致某个dom元素还没出来，但是你的代码直接使用了这个WebElement，那么就会抛出NullPointer的异常。为了解决这个问题。所以 Selenium 提供了两种等待方式：一种是隐式等待、一种是显式等待。</p>
+<ol>
+<li><p>隐式等待：调用<code>driver.implicitly_wait</code>。那么在获取不可用的元素之前，会先等待10秒中的时间。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">driver &#x3D; webdriver.Chrome(executable_path&#x3D;driver_path)</span><br><span class="line">driver.implicitly_wait(10)</span><br><span class="line"># 请求网页</span><br><span class="line">driver.get(&quot;https:&#x2F;&#x2F;www.douban.com&#x2F;&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>显示等待：显示等待是表明某个条件成立后才执行获取元素的操作。也可以在等待的时候指定一个最大的时间，如果超过这个时间那么就抛出一个异常。显示等待应该使用<code>selenium.webdriver.support.excepted_conditions</code>期望的条件和<code>selenium.webdriver.support.ui.WebDriverWait</code>来配合完成。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">from selenium import webdriver</span><br><span class="line">from selenium.webdriver.common.by import By</span><br><span class="line">from selenium.webdriver.support.ui import WebDriverWait</span><br><span class="line">from selenium.webdriver.support import expected_conditions as EC</span><br><span class="line">   </span><br><span class="line">driver &#x3D; webdriver.Firefox()</span><br><span class="line">driver.get(&quot;http:&#x2F;&#x2F;somedomain&#x2F;url_that_delays_loading&quot;)</span><br><span class="line">try:</span><br><span class="line">    element &#x3D; WebDriverWait(driver, 10).until(</span><br><span class="line">        EC.presence_of_element_located((By.ID, &quot;myDynamicElement&quot;))</span><br><span class="line">    )</span><br><span class="line">finally:</span><br><span class="line">    driver.quit()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一些其他的等待条件：</p>
+<ul>
+<li><p>presence_of_element_located：某个元素已经加载完毕了。</p>
+</li>
+<li><p>presence_of_all_emement_located：网页中所有满足条件的元素都加载完毕了。</p>
+</li>
+<li><p>element_to_be_cliable：某个元素是可以点击了。</p>
+<p>更多条件请参考：<a href="http://selenium-python.readthedocs.io/waits.html" target="_blank" rel="noopener">http://selenium-python.readthedocs.io/waits.html</a></p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="切换页面："><a href="#切换页面：" class="headerlink" title="切换页面："></a>切换页面：</h3><p>有时候窗口中有很多子tab页面。这时候肯定是需要进行切换的。<code>selenium</code>提供了一个叫做<code>switch_to_window</code>来进行切换，具体切换到哪个页面，可以从<code>driver.window_handles</code>中找到。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 打开一个新的页面</span><br><span class="line">self.driver.execute_script(&quot;window.open(&#39;&quot;+url+&quot;&#39;)&quot;)</span><br><span class="line"># 切换到这个新的页面中</span><br><span class="line">self.driver.switch_to_window(self.driver.window_handles[1])</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置代理ip："><a href="#设置代理ip：" class="headerlink" title="设置代理ip："></a>设置代理ip：</h3><p>有时候频繁爬取一些网页。服务器发现你是爬虫后会封掉你的ip地址。这时候我们可以更改代理ip。更改代理ip，不同的浏览器有不同的实现方式。这里以<code>Chrome</code>浏览器为例来讲解：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">from selenium import webdriver</span><br><span class="line"></span><br><span class="line">options &#x3D; webdriver.ChromeOptions()</span><br><span class="line">options.add_argument(&quot;--proxy-server&#x3D;http:&#x2F;&#x2F;110.73.2.248:8123&quot;)</span><br><span class="line">driver_path &#x3D; r&quot;D:\ProgramApp\chromedriver\chromedriver.exe&quot;</span><br><span class="line">driver &#x3D; webdriver.Chrome(executable_path&#x3D;driver_path,chrome_options&#x3D;options)</span><br><span class="line"></span><br><span class="line">driver.get(&#39;http:&#x2F;&#x2F;httpbin.org&#x2F;ip&#39;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="WebElement-元素："><a href="#WebElement-元素：" class="headerlink" title="WebElement 元素："></a>WebElement 元素：</h3><p><code>from selenium.webdriver.remote.webelement import WebElement</code>类是每个获取出来的元素的所属类。<br>有一些常用的属性：</p>
+<ol>
+<li>get_attribute：这个标签的某个属性的值。</li>
+<li>screentshot：获取当前页面的截图。这个方法只能在<code>driver</code>上使用。<br><code>driver</code>的对象类，也是继承自 WebElement。<br>更多请阅读相关源代码。</li>
+</ol>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/14/%E5%9B%9B%E3%80%81%E7%88%AC%E8%99%AB%E8%BF%9B%E9%98%B6-2%E2%80%94%E2%80%94ajax%E6%95%B0%E6%8D%AE%E7%88%AC%E5%8F%96/" data-id="ck6m69dvp006q68vv8eep6291"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" rel="tag">网络爬虫</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/14/%E5%9B%9B%E3%80%81%E7%88%AC%E8%99%AB%E8%BF%9B%E9%98%B6-3%E2%80%94%E2%80%94%E5%9B%BE%E5%BD%A2%E9%AA%8C%E8%AF%81%E7%A0%81%E8%AF%86%E5%88%AB/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            四、爬虫进阶(3）——图形验证码识别
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/14/%E5%9B%9B%E3%80%81%E7%88%AC%E8%99%AB%E8%BF%9B%E9%98%B6-1%E2%80%94%E2%80%94%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%88%AC%E8%99%AB/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">四、爬虫进阶(1）——多线程爬虫</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

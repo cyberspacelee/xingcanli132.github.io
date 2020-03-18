@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    六、Scrapy-Redis(1)——redis介绍 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-六、Scrapy-Redis-1-——redis介绍" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  六、Scrapy-Redis(1)——redis介绍
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/14/%E5%85%AD%E3%80%81Scrapy-Redis-1-%E2%80%94%E2%80%94redis%E4%BB%8B%E7%BB%8D/" class="article-date">
+  <time datetime="2020-02-14T12:45:38.000Z" itemprop="datePublished">2020-02-14</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/">网络爬虫</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">2.1k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">7分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="redis教程"><a href="#redis教程" class="headerlink" title="redis教程"></a>redis教程</h2><a id="more"></a>
+<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>redis是一种支持分布式的<code>nosql</code>数据库，他的数据库是保存在内存中，同时<code>redis</code>可以定时把内在数据同步到磁盘，即可以将数据持久化。并且他比<code>memcached</code>支持更多的数据结构(<code>string</code>，<code>list列表[队列和栈]</code>,<code>set[集合]</code>，<code>sorted set[有序集合]</code>，<code>hash(hash表)</code>)。</p>
+<p>相关参考文档：<a href="http://redisdoc.com/index.html" target="_blank" rel="noopener">http://redisdoc.com/index.html</a></p>
+<h3 id="redis使用场景"><a href="#redis使用场景" class="headerlink" title="redis使用场景"></a>redis使用场景</h3><ol>
+<li>登录会话存储：存储在 <code>redis</code>中，与 <code>memcached</code>相比，数据不会丢失。</li>
+<li>排行榜/计数器：比如一些秀场类的项目，经常会有一些前多少名的主播排名。还有一些文章阅读量的技术，或者新浪微博的占赞数等。</li>
+<li>作为消息队列：比如<code>celery</code>就是使用<code>redis</code>作为中间件。</li>
+<li>当前在线人数：还是之前的秀场例子，会显示当前系统有多少在线人数。</li>
+<li>一些常用的数据缓存：比如我们的<code>BBS</code>论坛，板块不会经常变化的，但是每次访问首页都要从<code>mysql</code>中获取，可以在<code>redis</code>中缓存起来，不用每次请求数据库。</li>
+<li>把前200篇文章缓存或者评论缓存：一般用户浏览网站，只会浏览前面一部分文章或者评论，那么可以把前面200篇文章和对应的评论缓存起来。用户访问超过的，就访问数据库，并且以后文章超过200篇，则把之前的文章删除。</li>
+<li>好友关系：微博的好友关系使用<code>redis</code> 实现。</li>
+<li>发布和订阅功能：可以用来做聊天软件。</li>
+</ol>
+<h3 id="redis-和-memcached-的比较"><a href="#redis-和-memcached-的比较" class="headerlink" title="redis 和 memcached 的比较"></a>redis 和 memcached 的比较</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>memcached</th>
+<th>Redis</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>类型</td>
+<td>纯内存数据库</td>
+<td>内存磁盘同步数据库</td>
+</tr>
+<tr>
+<td>数据类型</td>
+<td>在定义value时就要固定数据类型</td>
+<td>不需要</td>
+</tr>
+<tr>
+<td>虚拟内存</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>过期策略</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>存储数据安全</td>
+<td>不支持</td>
+<td>可以将数据同步到dump.db中</td>
+</tr>
+<tr>
+<td>灾难恢复</td>
+<td>不支持</td>
+<td>可以将磁盘中的数据恢复到内存中</td>
+</tr>
+<tr>
+<td>分布式</td>
+<td>支持</td>
+<td>主从同步</td>
+</tr>
+<tr>
+<td>订阅与发布</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+</tbody></table>
+<h3 id="redis-在-ubuntu-系统中的安装与启动"><a href="#redis-在-ubuntu-系统中的安装与启动" class="headerlink" title="redis 在 ubuntu 系统中的安装与启动"></a>redis 在 ubuntu 系统中的安装与启动</h3><ol>
+<li><p>安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install redis-server</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>卸载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get purge --auto-remove redis-server</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动： redis 安装后，默认会自动启动，可以通过以下命令查看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps aux | grep redis</span><br></pre></td></tr></table></figure>
+
+<p>如果想自己手动启动，可以通过以下命令进行启动：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service redis-server start</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>停止：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service redis-server stop</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="redis-在-windows-系统中的安装与启动"><a href="#redis-在-windows-系统中的安装与启动" class="headerlink" title="redis 在 windows 系统中的安装与启动"></a>redis 在 windows 系统中的安装与启动</h3><ol>
+<li>下载：redis官方是不支持windows操作系统的。但是微软的开源部门将redis移植到了windows上。因此下载地址不是在redis官网上。而是在github上：<a href="https://github.com/MicrosoftArchive/redis/releases" target="_blank" rel="noopener">https://github.com/MicrosoftArchive/redis/releases</a></li>
+<li>安装：点击下一步安装就可以了。</li>
+<li>运行：进入到<code>redis</code>所在的安装路径然后执行<code>redis-server.exe redis.windows.conf</code>就可以运行了。</li>
+<li>连接：<code>redis</code>和<code>mysql</code>以及<code>mongo</code>是一样的，都提供了一个客户端进行连接。输入命令<code>redis-cli</code>(前提是redis安装路径已经加入到环境变量中了)就可以连接到<code>redis</code>服务器了。</li>
+</ol>
+<h3 id="其他机器访问本地redis服务器"><a href="#其他机器访问本地redis服务器" class="headerlink" title="其他机器访问本地redis服务器"></a>其他机器访问本地redis服务器</h3><p>想要让其他机器访问本机的redis服务器，那么要修改redis.conf的配置文件。将bind改成bind[自己的ip地址或者0.0.0.0]，其他机器才能访问。</p>
+<p><strong>注意：bind绑定的是本机网卡的ip地址，而不是想让其他机器连接的ip地址。如果有多块网卡，那么可以绑定多个网卡的ip地址。如果绑定到的是0.0.0.0，那么意味着其他机器可以通过本机所有的ip地址进行访问。</strong></p>
+<h3 id="对-redis-的操作"><a href="#对-redis-的操作" class="headerlink" title="对 redis 的操作"></a>对 redis 的操作</h3><p>对 redis 的操作可以用两种方式，第一种方式采用 <code>redis-cli</code> ，第二种方式采用编程语言，比如 <code>Python</code>、<code>PHP</code>和<code>JAVA</code> 等。</p>
+<ol>
+<li>使用 <code>redis-cli</code> 对 redis 进行字符串操作：</li>
+</ol>
+<ul>
+<li><p>启动 redis：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service redis-server start</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>连接上 <code>redis-server</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h [ip] -p [端口]</span><br><span class="line"># redis-cli -h 192.168.1.8 -p 6379</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>字符串操作</p>
+<ul>
+<li><p>添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set key value</span><br><span class="line">如：</span><br><span class="line">set username xiaotuo</span><br></pre></td></tr></table></figure>
+
+<p>将字符串值<code>value</code>关联到<code>key</code>。如果<code>key</code>已经持有其他值，<code>set</code>命令就覆写旧值，无视其类型。并且默认的过期时间是永久，即永远不会过期。</p>
+</li>
+<li><p>删除：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">del key</span><br><span class="line">如：</span><br><span class="line">del username</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置过期时间：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">expire key timeout(单位为秒)</span><br></pre></td></tr></table></figure>
+
+<p>也可以在设置值的时候，一同指定过期时间：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set key value EX timeout</span><br><span class="line">或：</span><br><span class="line">setex key timeout value</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看过期时间：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ttl key</span><br><span class="line">如：</span><br><span class="line">ttl username</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看当前 <code>redis</code> 中的所有<code>key</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">key *</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>列表操作：</p>
+<ul>
+<li><p>在列表左边添加元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lpush key value</span><br></pre></td></tr></table></figure>
+
+<p>将值 <code>value</code>插入到列表<code>key</code>的表头。如果<code>key</code>不存在，一个空列表会被创建并执行<code>lpush</code>操作。当<code>key</code>存在但不是列表类型时，将返回一个错误。</p>
+</li>
+<li><p>在列表右边添加元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpush key value</span><br></pre></td></tr></table></figure>
+
+<p>将值 <code>value</code>插入到列表<code>key</code>的末尾。如果<code>key</code>不存在，一个空列表会被创建并执行<code>rpush</code>操作。当<code>key</code>存在但不是列表类型时，将返回一个错误。</p>
+</li>
+<li><p>查看列表中的元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lrange key start stop</span><br></pre></td></tr></table></figure>
+
+<p>返回列表<code>key</code>中指定区间内的元素，区间以偏移量<code>start</code>和<code>stop</code>指定。如果要左边的第一个到最后的一个<code>lrange key 0 -1</code>。</p>
+</li>
+<li><p>移除列表中的元素：</p>
+<ul>
+<li><p>移除并返回列表<code>key</code>的头元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lpop key</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>移除并返回列表的尾元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpop key</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>移除并返回列表<code>key</code>的中间元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lrem key count value</span><br></pre></td></tr></table></figure>
+
+<p>将删除<code>key</code>这个列表中，<code>count</code>个值为<code>value</code>的元素。</p>
+</li>
+</ul>
+</li>
+<li><p>指定返回第几个元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lindex key index</span><br></pre></td></tr></table></figure>
+
+<p>将返回<code>key</code>这个列表中，索引为<code>index</code>的这个元素。</p>
+</li>
+<li><p>获取列表中的元素个数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">llen key</span><br><span class="line">如：</span><br><span class="line">llen languages</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除指定的元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lrem key count value</span><br><span class="line">如：</span><br><span class="line">lrem languages 0 php</span><br></pre></td></tr></table></figure>
+
+<p>根据参数<code>count</code>的值，移除列表中与参数<code>value</code>相等的元素。<code>count</code>的值可以是以下几种：</p>
+<ul>
+<li>Count &gt; 0：从表头开始向表尾搜索，移除与<code>value</code>相等的元素，数量为<code>count</code>。</li>
+<li>Count &lt; 0：从表尾开始向表头搜索，移除与<code>value</code>相等的元素，数量为<code>count</code>的绝对值。</li>
+<li>Count = 0：移除表中所有与<code>value</code>相等的值。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>set集合的操作：</p>
+<ul>
+<li><p>添加元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sadd set value1 value2...</span><br><span class="line">如：</span><br><span class="line">sadd team xiaotuo datuo</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">smembers set</span><br><span class="line">如：</span><br><span class="line">smembers team</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>移除元素：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">srem set member...</span><br><span class="line">如：</span><br><span class="line">srem team xiaotuo datuo</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看集合中的元素个数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scard set</span><br><span class="line">如：</span><br><span class="line">scard team1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取多个集合的交集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sinter set1 set2</span><br><span class="line">如：</span><br><span class="line">sinter team1 team2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取各个集合的并集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sunion set1 set2</span><br><span class="line">如：</span><br><span class="line">sunion team1 team2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取两个集合的差集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sdiff set1 set2</span><br><span class="line">如：</span><br><span class="line">sdiff team1 team2</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>Hash 哈希操作：</p>
+<ul>
+<li><p>添加一个新值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hset key field value</span><br><span class="line">如：</span><br><span class="line">hset website baidu baidu.com</span><br></pre></td></tr></table></figure>
+
+<p>将哈希表<code>key</code>中的域<code>field</code>的值设为<code>value</code>。</p>
+<p>如果<code>key</code>不存在，一个新的哈希表被创建并进行<code>HSET</code>操作。如果域<code>field</code>已经存在于哈希表中，旧值将被覆盖。</p>
+</li>
+<li><p>获取哈希中的<code>field</code>对应的值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hget key field</span><br><span class="line">如：</span><br><span class="line">hget website baidu</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除<code>field</code>中的某个<code>value</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hdel key field</span><br><span class="line">如：</span><br><span class="line">hdel website baidu</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取某个哈希中所有的<code>field</code>和<code>value</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hgetall key</span><br><span class="line">如：</span><br><span class="line">hgetall website</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取某个哈希中所有<code>field</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hkeys key</span><br><span class="line">如：</span><br><span class="line">hkeys website</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取某个哈希中所有的值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hvals key</span><br><span class="line">如：</span><br><span class="line">hvals website</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>判断哈希中是否存在某个<code>field</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexists key field</span><br><span class="line">如：</span><br><span class="line">hexists website baidu</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取哈希中总共的键值对：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hlen field</span><br><span class="line">如：</span><br><span class="line">hlen website</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>事务操作：Redis事务可以一次执行多个命令，事务具有以下特征：</p>
+<ul>
+<li><p>隔离操作：事务中的所有命令都会序列化、按顺序地执行，不会被其他命令打扰。</p>
+</li>
+<li><p>原子操作：事务中的命令要么全部被执行，要么全部都不执行。</p>
+</li>
+<li><p>开启一个事务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multi</span><br></pre></td></tr></table></figure>
+
+<p>以后执行的所有命令，都在这个事务中执行的。</p>
+</li>
+<li><p>执行事务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exec</span><br></pre></td></tr></table></figure>
+
+<p>会将在<code>multi</code>和<code>exec</code>中的操作一并提交。</p>
+</li>
+<li><p>取消事务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">discard</span><br></pre></td></tr></table></figure>
+
+<p>会将<code>multi</code>后的所有命令取消。</p>
+</li>
+<li><p>监视一个或者多个<code>key</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">watch key...</span><br></pre></td></tr></table></figure>
+
+<p>监视一个(或多个)key，如果在事务执行之前这个(或这些)key被其他命令所改动，那么事务将被打断。</p>
+</li>
+<li><p>取消所有<code>key</code>的监视：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unwatch</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>发布/订阅操作：</p>
+<ul>
+<li><p>给某个频道发布消息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">publish channel message</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>订阅某个频道的消息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">subscribe channel</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/14/%E5%85%AD%E3%80%81Scrapy-Redis-1-%E2%80%94%E2%80%94redis%E4%BB%8B%E7%BB%8D/" data-id="ck6m69dvl006b68vveywk5q2s"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" rel="tag">网络爬虫</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/14/%E5%85%AD%E3%80%81Scrapy-Redis-2-%E2%80%94%E2%80%94%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB%E7%BB%84%E4%BB%B6/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            六、Scrapy-Redis(2)——分布式爬虫组件
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-8-%E2%80%94%E2%80%94scrapy%E7%88%AC%E8%99%AB%E5%AE%9E%E6%88%98/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">五、Scrapy框架(8)——scrapy爬虫实战</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

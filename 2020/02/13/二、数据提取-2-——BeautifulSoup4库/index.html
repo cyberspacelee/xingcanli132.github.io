@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    二、数据提取(2)——BeautifulSoup4库 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-二、数据提取-2-——BeautifulSoup4库" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  二、数据提取(2)——BeautifulSoup4库
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/13/%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E6%8F%90%E5%8F%96-2-%E2%80%94%E2%80%94BeautifulSoup4%E5%BA%93/" class="article-date">
+  <time datetime="2020-02-13T13:46:30.000Z" itemprop="datePublished">2020-02-13</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/">网络爬虫</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">4.2k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">22分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="BeautifulSoup4库"><a href="#BeautifulSoup4库" class="headerlink" title="BeautifulSoup4库"></a>BeautifulSoup4库</h2><a id="more"></a>
+<p>和lxml一样，BeautifulSoup也是一个HTML/XML的解析器，主要的功能也是如何解析和提取 HTML/XML数据。</p>
+<p>lxml只会局部遍历，而BeautifulSoup是基于HTML DOM的，会载入整个目标，解析整个DOM树，因此时间和内存开销都会大很多，所以性能要低于lxml。</p>
+<p>BeautifulSoup用来解析 HTML 比较简单，API 非常人性化，支持 CSS 选择器，Python标准库中的 HTML 解析器，也支持 lxml 的XML解析器。</p>
+<p>BeautifulSoup3目前已经停止开发，推荐现在的项目使用 BeautifulSoup 4。</p>
+<h3 id="安装和文件"><a href="#安装和文件" class="headerlink" title="安装和文件"></a>安装和文件</h3><ol>
+<li>安装：<code>pip install bs4</code></li>
+<li>中文文档：<a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/index.zh.html" target="_blank" rel="noopener">https://www.crummy.com/software/BeautifulSoup/bs4/doc/index.zh.html</a></li>
+</ol>
+<h3 id="几大解析工具对比"><a href="#几大解析工具对比" class="headerlink" title="几大解析工具对比"></a>几大解析工具对比</h3><table>
+<thead>
+<tr>
+<th>解析工具</th>
+<th>解析速度</th>
+<th>使用难度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BeautifulSoup</td>
+<td>最慢</td>
+<td>最简单</td>
+</tr>
+<tr>
+<td>lxml</td>
+<td>快</td>
+<td>简单</td>
+</tr>
+<tr>
+<td>正则</td>
+<td>最快</td>
+<td>最难</td>
+</tr>
+</tbody></table>
+<h3 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line">from bs4 import BeautifulSoup</span><br><span class="line"></span><br><span class="line">html &#x3D; &quot;&quot;&quot;</span><br><span class="line">&lt;table class&#x3D;&quot;tablelist&quot; cellpadding&#x3D;&quot;0&quot; cellspacing&#x3D;&quot;0&quot;&gt;</span><br><span class="line">    &lt;tbody&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;h&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l&quot; width&#x3D;&quot;374&quot;&gt;职位名称&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;职位类别&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;人数&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;地点&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;发布时间&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;even&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48569&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;26699-智慧零售业务中心前端开发（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;odd&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48556&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;22989-高级AI后台开发工程师（上海&#x2F;深圳）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;even&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48537&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;25666-腾讯云华东区域解决方案支持&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;odd&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48534&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;CSIG02-腾讯云行业方案架构师（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;even&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48428&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;25929-高级机器学习工程师&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;odd&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48425&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;30628-腾讯广告投放平台PHP开发工程师（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;even&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48393&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;CSIG16-车联网系统工程师（自研基础产品运维负责人）（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;odd&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48394&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;CSIG16-车联网IT运维经理（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;even&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48380&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;22989-腾讯云-区域交付leader（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;odd&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48349&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;27570-高级引擎工程师&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;&#x2F;tbody&gt;</span><br><span class="line">&lt;&#x2F;table&gt;</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line"># 创建 Beautiful Soup对象</span><br><span class="line"># 使用 lxml来进行解析</span><br><span class="line">soup &#x3D; BeautifulSoup(html,&quot;lxml&quot;)</span><br><span class="line"></span><br><span class="line"># bs4 &#x3D;&gt; lxml</span><br><span class="line">print(soup.prettify())</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="四个常用的对象"><a href="#四个常用的对象" class="headerlink" title="四个常用的对象"></a>四个常用的对象</h3><p>BeautifulSoup将复杂HTML文档转换成一个复杂的树形结构，每个节点都是Python对象，所有对象可以归纳为4种：</p>
+<ol>
+<li>Tag</li>
+<li>NavigableString</li>
+<li>BeautifulSoup</li>
+<li>Comment</li>
+</ol>
+<h4 id="1-Tag："><a href="#1-Tag：" class="headerlink" title="1.Tag："></a>1.Tag：</h4><p>Tag通俗点讲就是 HTML 中的一个个标签。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">from bs4 import BeautifulSoup</span><br><span class="line"></span><br><span class="line">html &#x3D; &quot;&quot;&quot;</span><br><span class="line">&lt;html&gt;&lt;head&gt;&lt;title&gt;The Dormouse&#39;s story&lt;&#x2F;title&gt;&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;p class&#x3D;&quot;title&quot; name&#x3D;&quot;dromouse&quot;&gt;&lt;b&gt;The Dormouse&#39;s story&lt;&#x2F;b&gt;&lt;&#x2F;p&gt;</span><br><span class="line">&lt;p class&#x3D;&quot;story&quot;&gt;Once upon a time there were three little sisters; and their names were</span><br><span class="line">&lt;a href&#x3D;&quot;http:&#x2F;&#x2F;example.com&#x2F;elsie&quot; class&#x3D;&quot;sister&quot; id&#x3D;&quot;link1&quot;&gt;&lt;!-- Elsie --&gt;&lt;&#x2F;a&gt;,</span><br><span class="line">&lt;a href&#x3D;&quot;http:&#x2F;&#x2F;example.com&#x2F;lacie&quot; class&#x3D;&quot;sister&quot; id&#x3D;&quot;link2&quot;&gt;Lacie&lt;&#x2F;a&gt; and</span><br><span class="line">&lt;a href&#x3D;&quot;http:&#x2F;&#x2F;example.com&#x2F;tillie&quot; class&#x3D;&quot;sister&quot; id&#x3D;&quot;link3&quot;&gt;Tillie&lt;&#x2F;a&gt;;</span><br><span class="line">and they lived at the bottom of a well.&lt;&#x2F;p&gt;</span><br><span class="line">&lt;p class&#x3D;&quot;story&quot;&gt;...&lt;&#x2F;p&gt;</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">#创建 Beautiful Soup 对象</span><br><span class="line">soup &#x3D; BeautifulSoup(html,&#39;lxml&#39;)</span><br><span class="line"></span><br><span class="line">print soup.title</span><br><span class="line"># &lt;title&gt;The Dormouse&#39;s story&lt;&#x2F;title&gt;</span><br><span class="line"></span><br><span class="line">print soup.head</span><br><span class="line"># &lt;head&gt;&lt;title&gt;The Dormouse&#39;s story&lt;&#x2F;title&gt;&lt;&#x2F;head&gt;</span><br><span class="line"></span><br><span class="line">print soup.a</span><br><span class="line"># &lt;a class&#x3D;&quot;sister&quot; href&#x3D;&quot;http:&#x2F;&#x2F;example.com&#x2F;elsie&quot; id&#x3D;&quot;link1&quot;&gt;&lt;!-- Elsie --&gt;&lt;&#x2F;a&gt;</span><br><span class="line"></span><br><span class="line">print soup.p</span><br><span class="line"># &lt;p class&#x3D;&quot;title&quot; name&#x3D;&quot;dromouse&quot;&gt;&lt;b&gt;The Dormouse&#39;s story&lt;&#x2F;b&gt;&lt;&#x2F;p&gt;</span><br><span class="line"></span><br><span class="line">print type(soup.p)</span><br><span class="line"># &lt;class &#39;bs4.element.Tag&#39;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以利用 soup 加标签名轻松地获取这些标签的内容，这些对象的类型是bs4.element.Tag。但是注意，它查找的是在所有内容中的第一个符合要求的标签。如果要查询所有的标签，后面会进行介绍。 对于Tag，它有两个重要的属性，分别是name和attrs。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">print soup.name</span><br><span class="line"># [document] #soup 对象本身比较特殊，它的 name 即为 [document]</span><br><span class="line"></span><br><span class="line">print soup.head.name</span><br><span class="line"># head #对于其他内部标签，输出的值便为标签本身的名称</span><br><span class="line"></span><br><span class="line">print soup.p.attrs</span><br><span class="line"># &#123;&#39;class&#39;: [&#39;title&#39;], &#39;name&#39;: &#39;dromouse&#39;&#125;</span><br><span class="line"># 在这里，我们把 p 标签的所有属性打印输出了出来，得到的类型是一个字典。</span><br><span class="line"></span><br><span class="line">print soup.p[&#39;class&#39;] # soup.p.get(&#39;class&#39;)</span><br><span class="line"># [&#39;title&#39;] #还可以利用get方法，传入属性的名称，二者是等价的</span><br><span class="line"></span><br><span class="line">soup.p[&#39;class&#39;] &#x3D; &quot;newClass&quot;</span><br><span class="line">print soup.p # 可以对这些属性和内容等等进行修改</span><br><span class="line"># &lt;p class&#x3D;&quot;newClass&quot; name&#x3D;&quot;dromouse&quot;&gt;&lt;b&gt;The Dormouse&#39;s story&lt;&#x2F;b&gt;&lt;&#x2F;p&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-NavigableString"><a href="#2-NavigableString" class="headerlink" title="2. NavigableString:"></a>2. NavigableString:</h4><p>如果拿到标签后，还想获取标签中的内容。那么可以通过<code>tag.string</code>获取标签中的文字。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">print soup.p.string</span><br><span class="line"># The Dormouse&#39;s story</span><br><span class="line"></span><br><span class="line">print type(soup.p.string)</span><br><span class="line"># &lt;class &#39;bs4.element.NavigableString&#39;&gt;thon</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-BeautifulSoup"><a href="#3-BeautifulSoup" class="headerlink" title="3. BeautifulSoup:"></a>3. BeautifulSoup:</h4><p>BeautifulSoup 对象表示的是一个文档的全部内容.大部分时候,可以把它当作 Tag 对象,它支持 遍历文档树 和 搜索文档树 中描述的大部分的方法. 因为 BeautifulSoup 对象并不是真正的HTML或XML的tag,所以它没有name和attribute属性.但有时查看它的 .name 属性是很方便的,所以 BeautifulSoup 对象包含了一个值为 “[document]” 的特殊属性 .name</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">soup.name</span><br><span class="line"># &#39;[document]&#39;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-Comment"><a href="#4-Comment" class="headerlink" title="4. Comment:"></a>4. Comment:</h4><p>Tag , NavigableString , BeautifulSoup 几乎覆盖了html和xml中的所有内容,但是还有一些特殊对象.容易让人担心的内容是文档的注释部分:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">markup &#x3D; &quot;&lt;b&gt;&lt;!--Hey, buddy. Want to buy a used parser?--&gt;&lt;&#x2F;b&gt;&quot;</span><br><span class="line">soup &#x3D; BeautifulSoup(markup)</span><br><span class="line">comment &#x3D; soup.b.string</span><br><span class="line">type(comment)</span><br><span class="line"># &lt;class &#39;bs4.element.Comment&#39;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>Comment 对象是一个特殊类型的 NavigableString 对象:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">comment</span><br><span class="line"># &#39;Hey, buddy. Want to buy a used parser&#39;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="遍历文档树"><a href="#遍历文档树" class="headerlink" title="遍历文档树"></a>遍历文档树</h3><h4 id="1-contents和children："><a href="#1-contents和children：" class="headerlink" title="1. contents和children："></a>1. contents和children：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">html_doc &#x3D; &quot;&quot;&quot;</span><br><span class="line">&lt;html&gt;&lt;head&gt;&lt;title&gt;The Dormouse&#39;s story&lt;&#x2F;title&gt;&lt;&#x2F;head&gt;</span><br><span class="line"></span><br><span class="line">&lt;p class&#x3D;&quot;title&quot;&gt;&lt;b&gt;The Dormouse&#39;s story&lt;&#x2F;b&gt;&lt;&#x2F;p&gt;</span><br><span class="line"></span><br><span class="line">&lt;p class&#x3D;&quot;story&quot;&gt;Once upon a time there were three little sisters; and their names were</span><br><span class="line">&lt;a href&#x3D;&quot;http:&#x2F;&#x2F;example.com&#x2F;elsie&quot; class&#x3D;&quot;sister&quot; id&#x3D;&quot;link1&quot;&gt;Elsie&lt;&#x2F;a&gt;,</span><br><span class="line">&lt;a href&#x3D;&quot;http:&#x2F;&#x2F;example.com&#x2F;lacie&quot; class&#x3D;&quot;sister&quot; id&#x3D;&quot;link2&quot;&gt;Lacie&lt;&#x2F;a&gt; and</span><br><span class="line">&lt;a href&#x3D;&quot;http:&#x2F;&#x2F;example.com&#x2F;tillie&quot; class&#x3D;&quot;sister&quot; id&#x3D;&quot;link3&quot;&gt;Tillie&lt;&#x2F;a&gt;;</span><br><span class="line">and they lived at the bottom of a well.&lt;&#x2F;p&gt;</span><br><span class="line"></span><br><span class="line">&lt;p class&#x3D;&quot;story&quot;&gt;...&lt;&#x2F;p&gt;</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">from bs4 import BeautifulSoup</span><br><span class="line">soup &#x3D; BeautifulSoup(html_doc,&#39;lxml&#39;)</span><br><span class="line"></span><br><span class="line">head_tag &#x3D; soup.head</span><br><span class="line"># 返回所有子节点的列表</span><br><span class="line">print(head_tag.contents)</span><br><span class="line"></span><br><span class="line"># 返回所有子节点的迭代器</span><br><span class="line">for child in head_tag.children:</span><br><span class="line">    print(child)</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-Strings-和-stripped-strings"><a href="#2-Strings-和-stripped-strings" class="headerlink" title="2. Strings 和 stripped_strings"></a>2. Strings 和 stripped_strings</h4><p>如果tag中包含多个字符串 [2] ,可以使用 .strings 来循环获取：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">for string in soup.strings:</span><br><span class="line">    print(repr(string))</span><br><span class="line">    # u&quot;The Dormouse&#39;s story&quot;</span><br><span class="line">    # u&#39;\n\n&#39;</span><br><span class="line">    # u&quot;The Dormouse&#39;s story&quot;</span><br><span class="line">    # u&#39;\n\n&#39;</span><br><span class="line">    # u&#39;Once upon a time there were three little sisters; and their names were\n&#39;</span><br><span class="line">    # u&#39;Elsie&#39;</span><br><span class="line">    # u&#39;,\n&#39;</span><br><span class="line">    # u&#39;Lacie&#39;</span><br><span class="line">    # u&#39; and\n&#39;</span><br><span class="line">    # u&#39;Tillie&#39;</span><br><span class="line">    # u&#39;;\nand they lived at the bottom of a well.&#39;</span><br><span class="line">    # u&#39;\n\n&#39;</span><br><span class="line">    # u&#39;...&#39;</span><br><span class="line">    # u&#39;\n&#39;</span><br></pre></td></tr></table></figure>
+
+<p>输出的字符串中可能包含了很多空格或空行,使用 .stripped_strings 可以去除多余空白内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">for string in soup.stripped_strings:</span><br><span class="line">    print(repr(string))</span><br><span class="line">    # u&quot;The Dormouse&#39;s story&quot;</span><br><span class="line">    # u&quot;The Dormouse&#39;s story&quot;</span><br><span class="line">    # u&#39;Once upon a time there were three little sisters; and their names were&#39;</span><br><span class="line">    # u&#39;Elsie&#39;</span><br><span class="line">    # u&#39;,&#39;</span><br><span class="line">    # u&#39;Lacie&#39;</span><br><span class="line">    # u&#39;and&#39;</span><br><span class="line">    # u&#39;Tillie&#39;</span><br><span class="line">    # u&#39;;\nand they lived at the bottom of a well.&#39;</span><br><span class="line">    # u&#39;...&#39;</span><br></pre></td></tr></table></figure>
+
+<h2 id><a href="#" class="headerlink" title></a></h2><h3 id="搜索文档树"><a href="#搜索文档树" class="headerlink" title="搜索文档树"></a>搜索文档树</h3><h4 id="1-find和find-all方法"><a href="#1-find和find-all方法" class="headerlink" title="1.find和find_all方法"></a>1.find和find_all方法</h4><p>搜索文档时，一般用得比较多的就是两个方法，一个是find，一个是find_all。find方法是找到第一个满足条件的标签后就立即返回，只返回一个元素。find_all方法是把所有满足条件的标签都选到，然后返回回去。使用这两个方法，最常用的用法是出入<em>name</em>以及<em>attr</em>参数找出符合要求的标签。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">soup.find_all(&quot;a&quot;,attrs&#x3D;&#123;&quot;id&quot;:&quot;link2&quot;&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>或者是直接传入属性的名字作为关键字参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">soup.find_all(&quot;a&quot;,id&#x3D;&quot;link2&quot;)</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-select方法"><a href="#2-select方法" class="headerlink" title="2. select方法"></a>2. select方法</h4><p>使用以上方法可以方便的找出元素。但有时候使用css选择器的方式可以更加的方便。使用css选择器的语法，应该使用<em>select</em>方法。以下列出几种常用 的css选择器方法：</p>
+<p>(1) 通过标签名查找</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(soup.select(&#39;a&#39;))</span><br></pre></td></tr></table></figure>
+
+<p>(2) 通过类名查找</p>
+<p>通过类名，则应该在类的前面加一个 . 。比如要查找 <strong>class=sister()</strong>的标签。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(soup.select(&#39;.sister&#39;))</span><br></pre></td></tr></table></figure>
+
+<p>(3)通过id查找</p>
+<p>通过id查找，应该在id的名字前面加一个＃号。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(soup.select(&quot;#link1&quot;))</span><br></pre></td></tr></table></figure>
+
+<p>(4)组合查找</p>
+<p>组合查找即和写 class 文件时，标签名与类名、id名进行的组合原理是一样的，例如查找 p 标签中，id 等于 link1的内容，二者需要用空格分开：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(soup.select(&quot;p #link1&quot;))</span><br></pre></td></tr></table></figure>
+
+<p>直接子标签查找，则使用 &gt; 分隔：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(soup.select(&quot;head &gt; title&quot;))</span><br></pre></td></tr></table></figure>
+
+<p>(5)通过属性查找</p>
+<p>查找时还可以加入属性元素，属性需要用中括号括起来，注意属性和标签属于同一节点，所以中间不能加空格，否则会无法匹配到。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(soup.select(&#39;a[href&#x3D;&quot;http:&#x2F;&#x2F;example.com&#x2F;elsie&quot;]&#39;))</span><br></pre></td></tr></table></figure>
+
+<p>（6）获取内容</p>
+<p>以上的 select 方法返回的结果都是列表形式，可以遍历形式输出，然后用 get_text() 方法来获取它的内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">soup &#x3D; BeautifulSoup(html, &#39;lxml&#39;)</span><br><span class="line">print type(soup.select(&#39;title&#39;))</span><br><span class="line">print soup.select(&#39;title&#39;)[0].get_text()</span><br><span class="line"></span><br><span class="line">for title in soup.select(&#39;title&#39;):</span><br><span class="line">    print title.get_text()</span><br></pre></td></tr></table></figure>
+
+<h3 id="实战：爬取中国天气网华北地区的天气"><a href="#实战：爬取中国天气网华北地区的天气" class="headerlink" title="实战：爬取中国天气网华北地区的天气"></a>实战：爬取中国天气网华北地区的天气</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">from bs4 import BeautifulSoup</span><br><span class="line"></span><br><span class="line">def parse_page(url):</span><br><span class="line">    headers &#x3D; &#123;</span><br><span class="line">        &#39;User-Agent&#39;:&#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;72.0.3626.121 Safari&#x2F;537.36&#39;        </span><br><span class="line">    &#125;</span><br><span class="line">    response &#x3D; requests.get(url,headers&#x3D;headers)</span><br><span class="line">    text &#x3D; response.content.decode(&#39;utf-8&#39;)</span><br><span class="line">    soup &#x3D; BeautifulSoup(text,&#39;lxml&#39;)</span><br><span class="line">    conMidtab &#x3D; soup.find(&#39;div&#39;,class_&#x3D;&#39;conMidtab&#39;)</span><br><span class="line">    tables &#x3D; conMidtab.find_all(&#39;table&#39;)</span><br><span class="line">    for table in tables:</span><br><span class="line">        trs &#x3D; table.find_all(&#39;tr&#39;)[2:]</span><br><span class="line">        for tr in trs:</span><br><span class="line">            tds &#x3D; tr.find_all(&#39;td&#39;)</span><br><span class="line">            city_td &#x3D; tds[0]</span><br><span class="line">            city &#x3D; list(city_td.stripped_strings)[0]</span><br><span class="line">            temp_td &#x3D; tds[-2] </span><br><span class="line">            min_temp &#x3D; list(temp_td.stripped_strings)[0]</span><br><span class="line">            print(&#123;&quot;city&quot;:city,&quot;min_temp&quot;:min_temp&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    url &#x3D; &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;hb.shtml&#39;</span><br><span class="line">    parse_page(url)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="实战2：爬取全国的最低气温并导出前十排行榜"><a href="#实战2：爬取全国的最低气温并导出前十排行榜" class="headerlink" title="实战2：爬取全国的最低气温并导出前十排行榜"></a>实战2：爬取全国的最低气温并导出前十排行榜</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"> 1 import requests</span><br><span class="line"> 2 from bs4 import BeautifulSoup</span><br><span class="line"> 3 from pyecharts import Bar</span><br><span class="line"> 4 </span><br><span class="line"> 5 ALL_DATA &#x3D; []</span><br><span class="line"> 6 </span><br><span class="line"> 7 def parse_page(url):</span><br><span class="line"> 8     headers &#x3D; &#123;</span><br><span class="line"> 9         &#39;User-Agent&#39;:&#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;72.0.3626.121 Safari&#x2F;537.36&#39;        </span><br><span class="line">10     &#125;</span><br><span class="line">11     response &#x3D; requests.get(url,headers&#x3D;headers)</span><br><span class="line">12     text &#x3D; response.content.decode(&#39;utf-8&#39;)</span><br><span class="line">13     # html5lib</span><br><span class="line">14     # pip install html5lib</span><br><span class="line">15     soup &#x3D; BeautifulSoup(text,&#39;html5lib&#39;)</span><br><span class="line">16     conMidtab &#x3D; soup.find(&#39;div&#39;,class_&#x3D;&#39;conMidtab&#39;)</span><br><span class="line">17     tables &#x3D; conMidtab.find_all(&#39;table&#39;)</span><br><span class="line">18     for table in tables:</span><br><span class="line">19         trs &#x3D; table.find_all(&#39;tr&#39;)[2:]</span><br><span class="line">20         for index,tr in enumerate(trs):</span><br><span class="line">21             tds &#x3D; tr.find_all(&#39;td&#39;)</span><br><span class="line">22             city_td &#x3D; tds[0]</span><br><span class="line">23             if index &#x3D;&#x3D; 0:</span><br><span class="line">24                 city_td &#x3D; tds[1]</span><br><span class="line">25             city &#x3D; list(city_td.stripped_strings)[0]</span><br><span class="line">26             temp_td &#x3D; tds[-2] </span><br><span class="line">27             min_temp &#x3D; list(temp_td.stripped_strings)[0]</span><br><span class="line">28             ALL_DATA.append(&#123;&quot;city&quot;:city,&quot;min_temp&quot;:min_temp&#125;)</span><br><span class="line">29             #print(&#123;&quot;city&quot;:city,&quot;min_temp&quot;:min_temp&#125;)</span><br><span class="line">30 </span><br><span class="line">31 </span><br><span class="line">32 def main():</span><br><span class="line">33     #url &#x3D; &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;hb.shtml&#39;</span><br><span class="line">34     #url &#x3D; &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;db.shtml&#39;</span><br><span class="line">35     #url &#x3D; &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;hd.shtml&#39;</span><br><span class="line">36     #url &#x3D; &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;hz.shtml&#39;</span><br><span class="line">37     #url &#x3D; &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;hn.shtml&#39;</span><br><span class="line">38     #url &#x3D; &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;xb.shtml&#39;</span><br><span class="line">39     #url &#x3D; &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;xn.shtml&#39;</span><br><span class="line">40     #url &#x3D; &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;gat.shtml&#39;</span><br><span class="line">41     urls &#x3D; &#123;</span><br><span class="line">42             &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;hb.shtml&#39;,</span><br><span class="line">43             &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;db.shtml&#39;,</span><br><span class="line">44             &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;hd.shtml&#39;,</span><br><span class="line">45             &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;hz.shtml&#39;,</span><br><span class="line">46             &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;hn.shtml&#39;,</span><br><span class="line">47             &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;xb.shtml&#39;,</span><br><span class="line">48             &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;xn.shtml&#39;,</span><br><span class="line">49             &#39;http:&#x2F;&#x2F;www.weather.com.cn&#x2F;textFC&#x2F;gat.shtml&#39;</span><br><span class="line">50             &#125;</span><br><span class="line">51     for url in urls:</span><br><span class="line">52        parse_page(url)</span><br><span class="line">53 </span><br><span class="line">54     #分析数据</span><br><span class="line">55     # 根据最低气温进行排序</span><br><span class="line">56     ALL_DATA.sort(key &#x3D; lambda data:int(data[&#39;min_temp&#39;]))</span><br><span class="line">57 </span><br><span class="line">58     data &#x3D; ALL_DATA[0:10]</span><br><span class="line">59     cities &#x3D; []</span><br><span class="line">60     cities &#x3D; list(map(lambda x:x[&#39;city&#39;],data))    </span><br><span class="line">61     temps &#x3D; list(map(lambda x:x[&#39;min_temp&#39;],data))</span><br><span class="line">62 </span><br><span class="line">63     chart &#x3D; Bar(&quot;中国天气最低气温排行榜&quot;)</span><br><span class="line">64     chart.add(&#39;&#39;,cities,temps)</span><br><span class="line">65     chart.render(&#39;temperature.html&#39;)</span><br><span class="line">66 </span><br><span class="line">67 </span><br><span class="line">68 if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">69     main()</span><br></pre></td></tr></table></figure>
+
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/13/%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E6%8F%90%E5%8F%96-2-%E2%80%94%E2%80%94BeautifulSoup4%E5%BA%93/" data-id="ck6m69dvd005k68vv1dvc2oyy"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" rel="tag">网络爬虫</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/13/%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E6%8F%90%E5%8F%96-3-%E2%80%94%E2%80%94%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8Cre%E6%A8%A1%E5%9D%97/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            二、数据提取(3)——正则表达式和re模块
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/13/%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E6%8F%90%E5%8F%96-1-%E2%80%94%E2%80%94xpath%E8%AF%AD%E6%B3%95%E4%B8%8Elxml%E5%BA%93/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">二、数据提取(1)——xpath语法与lxml库</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

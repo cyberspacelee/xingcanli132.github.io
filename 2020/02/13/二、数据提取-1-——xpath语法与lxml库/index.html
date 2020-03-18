@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    二、数据提取(1)——xpath语法与lxml库 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-二、数据提取-1-——xpath语法与lxml库" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  二、数据提取(1)——xpath语法与lxml库
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/13/%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E6%8F%90%E5%8F%96-1-%E2%80%94%E2%80%94xpath%E8%AF%AD%E6%B3%95%E4%B8%8Elxml%E5%BA%93/" class="article-date">
+  <time datetime="2020-02-13T13:39:16.000Z" itemprop="datePublished">2020-02-13</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/">网络爬虫</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">6.2k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">32分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="1-XPath语法"><a href="#1-XPath语法" class="headerlink" title="1. XPath语法"></a>1. XPath语法</h2><a id="more"></a>
+<h3 id="什么是XPath？"><a href="#什么是XPath？" class="headerlink" title="什么是XPath？"></a>什么是XPath？</h3><p>xpath（XML Path Language）是一门在XML和HTML文档中查找信息的语言，可用来在XML和HTML文档中对元素和属性进行遍历。</p>
+<h3 id="XPath开发工具"><a href="#XPath开发工具" class="headerlink" title="XPath开发工具"></a>XPath开发工具</h3><ol>
+<li>Chrome插件XPath Helper</li>
+<li>Firefox插件Xpath Checker</li>
+</ol>
+<h3 id="XPath语法"><a href="#XPath语法" class="headerlink" title="XPath语法"></a>XPath语法</h3><h4 id="选取节点"><a href="#选取节点" class="headerlink" title="选取节点"></a>选取节点</h4><p>Xpath使用路径表达式来选取 XML 文档中的节点或者节点集。这些路径表达式和我们在常规的电脑文件系统中看到的表达式非常相似。</p>
+<table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>描述</th>
+<th>示例</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>nodename</td>
+<td>选取此节点的所有子节点</td>
+<td>bookstore</td>
+<td>选取bookstore下所有的子节点</td>
+</tr>
+<tr>
+<td>/</td>
+<td>如果是在最前面，代表从根节点选取。否则选择某节点下的某个节点</td>
+<td>/bookstore</td>
+<td>选取根元素下所有的bookstore节点</td>
+</tr>
+<tr>
+<td>//</td>
+<td>从全局节点中选择节点，随便在哪个位置</td>
+<td>//book</td>
+<td>从全局节点中找到所有的book节点</td>
+</tr>
+<tr>
+<td>@</td>
+<td>选取某个节点的属性</td>
+<td>//book[@price]</td>
+<td>选择所有拥有price属性的book节点</td>
+</tr>
+</tbody></table>
+<h4 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h4><p>使用 <code>//</code>获取整个页面当中的元素，然后写标签名，然后再写谓词进行提取。比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;div[@class&#x3D;&#39;abc&#39;]</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的知识点：</p>
+<ol>
+<li><p>/ 和 // 的区别：/ 代表只获取直接子节点。//获取子孙节点。一般 // 用得比较多，当然也要视情况而定。</p>
+</li>
+<li><p>contains：有时候某个属性中包含了多个值，那么可以使用<code>contains</code>函数。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;div[contains(@class,&#39;job_detail&#39;)]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>谓词中的下标是从1开始的，不是从0开始的。</p>
+</li>
+</ol>
+<h4 id="谓语"><a href="#谓语" class="headerlink" title="谓语"></a>谓语</h4><p>谓语用来查找某个特定的节点或者包含某个指定的值的节点，被嵌在方括号中。在下面的表格中，我们列出了带有谓语的一些路径表达式，以及表达式的结果：</p>
+<table>
+<thead>
+<tr>
+<th>路径表达式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>/bookstore/book[1]</td>
+<td>选取bookstore下的第一个子元素</td>
+</tr>
+<tr>
+<td>/bookstore/book[last()]</td>
+<td>选取bookstore下的倒数第二个book元素</td>
+</tr>
+<tr>
+<td>bookstore/book[position()&lt;3]</td>
+<td>选取bookstore下前面两个子元素</td>
+</tr>
+<tr>
+<td>//book[@price]</td>
+<td>选取拥有price属性的book元素</td>
+</tr>
+<tr>
+<td>//book[@price=10]</td>
+<td>选取所有属性price等于10的book元素</td>
+</tr>
+</tbody></table>
+<h4 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h4><p>*表示通配符。</p>
+<table>
+<thead>
+<tr>
+<th>通配符</th>
+<th>描述</th>
+<th>示例</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>*</td>
+<td>匹配任意节点</td>
+<td>/bookstore/*</td>
+<td>选取bookstore下的所有子元素</td>
+</tr>
+<tr>
+<td>@*</td>
+<td>匹配节点中的任何属性</td>
+<td>//book[@*]</td>
+<td>选取所有带有属性的book元素</td>
+</tr>
+</tbody></table>
+<h4 id="选取多个路径"><a href="#选取多个路径" class="headerlink" title="选取多个路径"></a>选取多个路径</h4><p>通过在路径表达式中使用“i”运算符，可以选取若干个路径。</p>
+<p>示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;bookstore&#x2F;book | &#x2F;&#x2F;book&#x2F;title</span><br><span class="line"># 选取所有book元素以及book元素下所有的title元素</span><br></pre></td></tr></table></figure>
+
+<h4 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h4><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>描述</th>
+<th>示例</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>|</td>
+<td>计算两个节点集</td>
+<td>//book | //cd</td>
+<td>返回所有拥有 book 和 cd 元素的节点集</td>
+</tr>
+<tr>
+<td>+</td>
+<td>加法</td>
+<td>6 + 4</td>
+<td>10</td>
+</tr>
+<tr>
+<td>-</td>
+<td>减法</td>
+<td>6 - 4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>*</td>
+<td>乘法</td>
+<td>6 * 4</td>
+<td>24</td>
+</tr>
+<tr>
+<td>div</td>
+<td>除法</td>
+<td>8 div 4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>=</td>
+<td>等于</td>
+<td>price = 9.80</td>
+<td>如果price是9.80，则返回true，如果不是，则返回false</td>
+</tr>
+<tr>
+<td>!=</td>
+<td>不等于</td>
+<td>price != 9.80</td>
+<td>如果price不是9.80，则返回true，如果是，则返回false</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>小于</td>
+<td>price &lt; 9.80</td>
+<td>如果price小于9.80，则返回true，如果不是，则返回false</td>
+</tr>
+<tr>
+<td>&lt;=</td>
+<td>小于或等于</td>
+<td>price &lt;= 9.80</td>
+<td>如果price小于或等于9.80，则返回true，如果不是，则返回false</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>大于</td>
+<td>price &gt; 9.80</td>
+<td>如果price大于9.80，则返回true，如果不是，则返回false</td>
+</tr>
+<tr>
+<td>&gt;=</td>
+<td>大于或等于</td>
+<td>price &gt;= 9.80</td>
+<td>如果price大于或等于9.80，则返回true，如果不是，则返回false</td>
+</tr>
+<tr>
+<td>or</td>
+<td>或</td>
+<td>price = 9.80 or price = 9.70</td>
+<td>满足任意一个条件，则返回true，如果不是，则返回false</td>
+</tr>
+<tr>
+<td>and</td>
+<td>与</td>
+<td>price &gt; 9.0 and price &lt; 9.70</td>
+<td>同时满足两边条件，则返回true，如果不是，则返回false</td>
+</tr>
+<tr>
+<td>Mod</td>
+<td>计算除法的余数</td>
+<td>5 mod 2</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<h2 id><a href="#" class="headerlink" title></a></h2><h2 id="2-lxml库"><a href="#2-lxml库" class="headerlink" title="2. lxml库"></a>2. lxml库</h2><p>lxml是一个HTML/XML的解析器，主要的功能是如何解析和提取 HTML/XML数据。</p>
+<p>lxml和正则一样，也是用C实现，是一款高性能的 Python HTML/XML解析器，我们可以利用之前学习的XPath语法，来快速的定位特定元素以及节点信息。</p>
+<p>lxml python官方文档：<a href="http://lxml.de/index.html" target="_blank" rel="noopener">http://lxml.de/index.html</a></p>
+<p>需要安装C语言库，可使用pip安装：<code>pip install lxml</code></p>
+<h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><p>解析html字符串：使用<code>lxml.etree.HTML</code>进行解析。我们可以利用它来解析HTML代码，并且在解析HTML代码的时候，如果HTML代码不规范，它会自动进行补全。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">text &#x3D; &quot;&quot;&quot;</span><br><span class="line">&lt;div&gt;</span><br><span class="line">    &lt;ul&gt;</span><br><span class="line">        &lt;li class&#x3D;&quot;item-0&quot;&gt;&lt;a href&#x3D;&quot;link1.html&quot;&gt;first item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">        &lt;li class&#x3D;&quot;item-1&quot;&gt;&lt;a href&#x3D;&quot;link2.html&quot;&gt;second item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">        &lt;li class&#x3D;&quot;item-inactive&quot;&gt;&lt;a href&#x3D;&quot;link3.html&quot;&gt;third item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">        &lt;li class&#x3D;&quot;item-0&quot;&gt;&lt;a href&#x3D;&quot;link4.html&quot;&gt;fourth item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">        &lt;li class&#x3D;&quot;item-0&quot;&gt;&lt;a href&#x3D;&quot;link5.html&quot;&gt;fifth item&lt;&#x2F;a&gt; # 注意此处缺少一个&lt;&#x2F;li&gt;闭合标签</span><br><span class="line">    &lt;&#x2F;ul&gt;</span><br><span class="line">&lt;&#x2F;div&gt;</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line"># 利用etree.HTML 将字符串解析为HTML文档</span><br><span class="line">htmlElement &#x3D; etree.HTML(text)</span><br><span class="line"># 按字符串序列化HTML文档</span><br><span class="line">print(etree.tostring(htmlElement,encoding&#x3D;&#39;utf-8&#39;).decode(&#39;utf-8&#39;))</span><br></pre></td></tr></table></figure>
+
+<p>输出结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> 1 &lt;html&gt;</span><br><span class="line"> 2 &lt;body&gt;</span><br><span class="line"> 3 &lt;div&gt;</span><br><span class="line"> 4     &lt;ul&gt;</span><br><span class="line"> 5         &lt;li class&#x3D;&quot;item-0&quot;&gt;&lt;a href&#x3D;&quot;link1.html&quot;&gt;first item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line"> 6         &lt;li class&#x3D;&quot;item-1&quot;&gt;&lt;a href&#x3D;&quot;link2.html&quot;&gt;second item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line"> 7         &lt;li class&#x3D;&quot;item-inactive&quot;&gt;&lt;a href&#x3D;&quot;link3.html&quot;&gt;third item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line"> 8         &lt;li class&#x3D;&quot;item-0&quot;&gt;&lt;a href&#x3D;&quot;link4.html&quot;&gt;fourth item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line"> 9         &lt;li class&#x3D;&quot;item-0&quot;&gt;&lt;a href&#x3D;&quot;link5.html&quot;&gt;fifth item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">10     &lt;&#x2F;ul&gt;</span><br><span class="line">11 &lt;&#x2F;div&gt;</span><br><span class="line">12 &lt;&#x2F;body&gt;</span><br><span class="line">13 &lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到Lxml会自动修改HTML代码。例子中不仅补全了li标签，还添加了body，html标签。</p>
+<h3 id="从文件中读取html代码"><a href="#从文件中读取html代码" class="headerlink" title="从文件中读取html代码"></a>从文件中读取html代码</h3><p>除了直接使用字符串进行解析，lxml还支持从文件中读取内容。我们新建一个hello.html文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- hello.html --&gt;</span><br><span class="line">&lt;div&gt;</span><br><span class="line">    &lt;ul&gt;</span><br><span class="line">        &lt;li class&#x3D;&quot;item-0&quot;&gt;&lt;a href&#x3D;&quot;link1.html&quot;&gt;first item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">        &lt;li class&#x3D;&quot;item-1&quot;&gt;&lt;a href&#x3D;&quot;link2.html&quot;&gt;second item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">        &lt;li class&#x3D;&quot;item-inactive&quot;&gt;&lt;a href&#x3D;&quot;link3.html&quot;&gt;third item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">        &lt;li class&#x3D;&quot;item-1&quot;&gt;&lt;a href&#x3D;&quot;link4.html&quot;&gt;fourth item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">        &lt;li class&#x3D;&quot;item-0&quot;&gt;&lt;a href&#x3D;&quot;link5.html&quot;&gt;fifth item&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;</span><br><span class="line">    &lt;&#x2F;ul&gt;</span><br><span class="line">&lt;&#x2F;div&gt;</span><br></pre></td></tr></table></figure>
+
+<p>然后利用 <code>lxml.etree.parse()</code>方法来读取文件。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">#读取外部文件 hello.html</span><br><span class="line">htmlElement &#x3D; etree.parse(&#39;hello.html&#39;)</span><br><span class="line">print(etree.tostring(htmlElement, encoding&#x3D;&#39;utf-8&#39;).decode(&#39;utf-8&#39;))</span><br><span class="line"></span><br><span class="line">print(result)</span><br></pre></td></tr></table></figure>
+
+<p>输出结果和之前是相同的。</p>
+<p>这个函数默认使用的是<code>XML</code>解析器。如果遇到一些不规范的<code>HTML</code>代码的时候就会解析错误，这个时候就要自己创建<code>HTML</code>解析器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">parser &#x3D; etree.HTMLParser(encoding&#x3D;&#39;utf-8&#39;)</span><br><span class="line">htmlElement &#x3D; etree.parse(&#39;lagou.html&#39;,parser&#x3D;parser)</span><br><span class="line">print(etree.tostring(htmlElement,pretty_print&#x3D;True,encoding&#x3D;&#39;utf-8&#39;).decode(&#39;utf-8&#39;))</span><br></pre></td></tr></table></figure>
+
+<h3 id="在lxml中使用XPath语法"><a href="#在lxml中使用XPath语法" class="headerlink" title="在lxml中使用XPath语法"></a>在lxml中使用XPath语法</h3><h4 id="示例1-hello-html"><a href="#示例1-hello-html" class="headerlink" title="示例1-hello.html"></a>示例1-hello.html</h4><p>\1. 获取所有li标签</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">html &#x3D; etree.parse(&#39;hello.html&#39;)</span><br><span class="line">print(type(html)) # 显示 etree.parse() 返回类型</span><br><span class="line"></span><br><span class="line">result &#x3D; html.xpath(&#39;&#x2F;&#x2F;li&#39;)</span><br><span class="line">print(result) # 打印&lt;li&gt;标签的元素集合</span><br></pre></td></tr></table></figure>
+
+<p>\2. 获取所有li元素下的所有class属性的值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">html &#x3D; etree.parse(&#39;hello.html&#39;)</span><br><span class="line">result &#x3D; html.xpath(&#39;&#x2F;&#x2F;li&#x2F;@class&#39;)</span><br><span class="line"></span><br><span class="line">print(result)</span><br></pre></td></tr></table></figure>
+
+<p>\3. 获取li标签下href为 <code>www.baidu.com</code>的a标签</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">html &#x3D; etree.parse(&#39;hello.html&#39;)</span><br><span class="line">result &#x3D; html.xpath(&#39;&#x2F;&#x2F;li&#x2F;a[@href&#x3D;&quot;www.baidu.com&quot;]&#39;)</span><br><span class="line"></span><br><span class="line">print(result)</span><br></pre></td></tr></table></figure>
+
+<p>\4. 获取li标签下所有span标签</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">html &#x3D; etree.parse(&#39;hello.html&#39;)</span><br><span class="line">#result &#x3D; html.xpath(&#39;&#x2F;&#x2F;li&#x2F;span&#39;)</span><br><span class="line"># 注意这么写是不对的</span><br><span class="line"># 因为 &#x2F; 是用来获取子元素的，而&lt;span&gt;并不是&lt;li&gt;的子元素，所以，要用双斜杠</span><br><span class="line"></span><br><span class="line">result &#x3D; html.xpath(&#39;&#x2F;&#x2F;li&#x2F;&#x2F;span&#39;)</span><br><span class="line">print(result)</span><br></pre></td></tr></table></figure>
+
+<p>\5. 获取li标签下的a标签里的所有class</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">html &#x3D; etree.parse(&#39;hello.html&#39;)</span><br><span class="line">result &#x3D; html.xpath(&#39;&#x2F;&#x2F;li&#x2F;a&#x2F;&#x2F;@class&#39;)</span><br><span class="line">print(result)</span><br></pre></td></tr></table></figure>
+
+<p>\6. 获取最后一个li的a的href属性对应的值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">html &#x3D; etree.parse(&#39;hello.html&#39;)</span><br><span class="line">result &#x3D; html.xpath(&#39;&#x2F;&#x2F;li[last()]&#x2F;a&#x2F;@href&#39;)</span><br><span class="line"># 谓语[last()] 可以找到最后一个元素</span><br><span class="line">print(result)</span><br></pre></td></tr></table></figure>
+
+<p>\7. 获取倒数第二个li元素的内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">html &#x3D; etree.parse(&#39;hello.html&#39;)</span><br><span class="line">result &#x3D; html.xpath(&#39;&#x2F;&#x2F;li[last()-1]&#x2F;a&#39;)</span><br><span class="line"></span><br><span class="line"># text 方法可以获取元素内容</span><br><span class="line">print(result[0].text)</span><br></pre></td></tr></table></figure>
+
+<p>\8. 获取倒数第二个li元素的内容的第二种方式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">html &#x3D; etree.parse(&#39;hello.html&#39;)</span><br><span class="line">result &#x3D; html.xpath(&#39;&#x2F;&#x2F;li[last()-1]&#x2F;a&#x2F;text&#39;)</span><br><span class="line">print(result)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="示例2-tencent-html："><a href="#示例2-tencent-html：" class="headerlink" title="示例2-tencent.html："></a>示例2-tencent.html：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line">&lt;table class&#x3D;&quot;tablelist&quot; cellpadding&#x3D;&quot;0&quot; cellspacing&#x3D;&quot;0&quot;&gt;</span><br><span class="line">    &lt;tbody&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;h&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l&quot; width&#x3D;&quot;374&quot;&gt;职位名称&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;职位类别&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;人数&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;地点&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;发布时间&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;even&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48569&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;26699-智慧零售业务中心前端开发（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;odd&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48556&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;22989-高级AI后台开发工程师（上海&#x2F;深圳）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;even&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48537&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;25666-腾讯云华东区域解决方案支持&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;odd&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48534&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;CSIG02-腾讯云行业方案架构师（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;even&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48428&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;25929-高级机器学习工程师&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;odd&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48425&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;30628-腾讯广告投放平台PHP开发工程师（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;even&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48393&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;CSIG16-车联网系统工程师（自研基础产品运维负责人）（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;odd&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48394&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;CSIG16-车联网IT运维经理（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;even&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48380&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;22989-腾讯云-区域交付leader（上海）&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;1&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;tr class&#x3D;&quot;odd&quot;&gt;</span><br><span class="line">        &lt;td class&#x3D;&quot;l square&quot;&gt;&lt;a target&#x3D;&quot;_blank&quot;</span><br><span class="line">                                href&#x3D;&quot;position_detail.php?id&#x3D;48349&amp;keywords&#x3D;&amp;tid&#x3D;87&amp;lid&#x3D;2175&quot;&gt;27570-高级引擎工程师&lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;技术类&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;上海&lt;&#x2F;td&gt;</span><br><span class="line">        &lt;td&gt;2019-03-15&lt;&#x2F;td&gt;</span><br><span class="line">    &lt;&#x2F;tr&gt;</span><br><span class="line">    &lt;&#x2F;tbody&gt;</span><br><span class="line">&lt;&#x2F;table&gt;</span><br></pre></td></tr></table></figure>
+
+<p>\1. 获取所有tr标签</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">parser &#x3D; etree.HTMLParser(encoding&#x3D;&#39;utf-8&#39;)</span><br><span class="line">html &#x3D; etree.parse(&quot;tencent.html&quot;,parser&#x3D;parser)</span><br><span class="line"></span><br><span class="line"># 1.获取所有tr标签</span><br><span class="line"># &#x2F;&#x2F;tr</span><br><span class="line"># xpath函数返回的是一个列表</span><br><span class="line">trs &#x3D; html.xpath(&#39;&#x2F;&#x2F;tr&#39;)</span><br><span class="line">for tr in trs:</span><br><span class="line">    print(etree.tostring(tr,encoding&#x3D;&#39;utf-8&#39;).decode(&#39;utf-8&#39;))</span><br></pre></td></tr></table></figure>
+
+<p>\2. 获取第2个tr标签</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">parser &#x3D; etree.HTMLParser(encoding&#x3D;&#39;utf-8&#39;)</span><br><span class="line">html &#x3D; etree.parse(&quot;tencent.html&quot;,parser&#x3D;parser)</span><br><span class="line"></span><br><span class="line"># 2.获取第2个tr标签</span><br><span class="line">tr &#x3D; html.xpath(&#39;&#x2F;&#x2F;tr[2]&#39;)[0]</span><br><span class="line">print(etree.tostring(tr,encoding&#x3D;&#39;utf-8&#39;).decode(&#39;utf-8&#39;))</span><br></pre></td></tr></table></figure>
+
+<p>\3. 获取所有class等于even的tr标签</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">parser &#x3D; etree.HTMLParser(encoding&#x3D;&#39;utf-8&#39;)</span><br><span class="line">html &#x3D; etree.parse(&quot;tencent.html&quot;,parser&#x3D;parser)</span><br><span class="line"></span><br><span class="line"># 3.获取所有class等于even的标签</span><br><span class="line">trs &#x3D; html.xpath(&quot;&#x2F;&#x2F;tr[@class&#x3D;&#39;even&#39;]&quot;)</span><br><span class="line">for tr in trs:</span><br><span class="line">    print(etree.tostring(tr,encoding&#x3D;&#39;utf-8&#39;).decode(&#39;utf-8&#39;))</span><br></pre></td></tr></table></figure>
+
+<p>\4. 获取所有的a标签的href属性对应的值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">parser &#x3D; etree.HTMLParser(encoding&#x3D;&#39;utf-8&#39;)</span><br><span class="line">html &#x3D; etree.parse(&#39;tencent.html&#39;,parser)</span><br><span class="line"></span><br><span class="line"># 4.获取所的a标签的href属性对应的值</span><br><span class="line">aList &#x3D; html.xpath(&#39;&#x2F;&#x2F;a&#x2F;@href&#39;)</span><br><span class="line">for a in aList:</span><br><span class="line">    print(&#39;https:&#x2F;&#x2F;hr.tencent.com&#x2F;&#39;+ a)</span><br></pre></td></tr></table></figure>
+
+<p>\5. 获取所有的职位信息（纯文本）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">parser &#x3D; etree.HTMLParser(encoding&#x3D;&#39;utf-8&#39;)</span><br><span class="line">html &#x3D; etree.parse(&#39;tencent.html&#39;,parser)</span><br><span class="line"></span><br><span class="line"># 5.获取所有的职位信息（纯文本）</span><br><span class="line">trs &#x3D; html.xpath(&#39;&#x2F;&#x2F;tr[position()&gt;1]&#39;)</span><br><span class="line">positions &#x3D; []</span><br><span class="line">print(len(trs))</span><br><span class="line">for tr in trs:</span><br><span class="line">    # 在某个标签下，再执行 xpath函数，获取这个标签下的子孙元素</span><br><span class="line">    # 那么应该在 &#x2F;&#x2F;之前加一个点，代表是在当前元素下获取</span><br><span class="line">    href &#x3D; tr.xpath(&#39;.&#x2F;&#x2F;a&#x2F;@href&#39;)[0]</span><br><span class="line">    full_url &#x3D; &#39;https:&#x2F;&#x2F;hr.tencent.com&#39; + href</span><br><span class="line">    title &#x3D; tr.xpath(&#39;.&#x2F;td[1]&#x2F;&#x2F;text()&#39;)[0]</span><br><span class="line">    category &#x3D; tr.xpath(&#39;.&#x2F;td[2]&#x2F;text()&#39;)[0]</span><br><span class="line">    nums &#x3D; tr.xpath(&quot;.&#x2F;td[3]&#x2F;text()&quot;)[0]</span><br><span class="line">    address &#x3D; tr.xpath(&quot;.&#x2F;td[4]&#x2F;text()&quot;)[0]</span><br><span class="line">    pubtime &#x3D; tr.xpath(&quot;.&#x2F;td[5]&#x2F;text()&quot;)[0]</span><br><span class="line"></span><br><span class="line">    position &#x3D; &#123;</span><br><span class="line">        &#39;url&#39;: full_url,</span><br><span class="line">        &#39;title&#39;: title,</span><br><span class="line">        &#39;category&#39;: category,</span><br><span class="line">        &#39;nums&#39;: nums,</span><br><span class="line">        &#39;address&#39;: address,</span><br><span class="line">        &#39;pubtime&#39;: pubtime</span><br><span class="line">    &#125;</span><br><span class="line">    positions.append(position)</span><br><span class="line"></span><br><span class="line">print(positions)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="lxml结合xpath注意事项"><a href="#lxml结合xpath注意事项" class="headerlink" title="lxml结合xpath注意事项"></a>lxml结合xpath注意事项</h3><ol>
+<li><p>使用<code>xpath</code>语法，应该使用<code>Element.xpath</code>方法，来执行xpath的选择。示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">trs  &#x3D; html.path(&quot;&#x2F;&#x2F;tr[position() &gt; 1]&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>xpath函数返回是永远是一个列表。</p>
+</li>
+<li><p>获取某个标签的属性对应的值，示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">href &#x3D; html.xpath(&quot;&#x2F;&#x2F;a&#x2F;@href&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取文本，是通过xpath中的<code>text()</code>函数，示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">address &#x3D; tr.xpath(&quot;.&#x2F;td[4]&#x2F;text()&quot;)[0]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在某个标签下，再执行xpath函数，获取这个标签下的子孙元素，那么应该在 //之前加一个点，代表是在当前元素下获取，示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">category &#x3D; tr.xpath(&#39;.&#x2F;td[2]&#x2F;text()&#39;)[0]</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="实战1：爬取豆瓣电影正在上映电影"><a href="#实战1：爬取豆瓣电影正在上映电影" class="headerlink" title="实战1：爬取豆瓣电影正在上映电影"></a>实战1：爬取豆瓣电影正在上映电影</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line"># 1.将目标网站上的页面抓取下来</span><br><span class="line">headers&#x3D;&#123;</span><br><span class="line">    &#39;User_Agent&#39;:&#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;72.0.3626.121 Safari&#x2F;537.36&#39;,</span><br><span class="line">    &#39;Referer&#39;:&#39;https:&#x2F;&#x2F;movie.douban.com&#x2F;&#39;</span><br><span class="line">&#125;</span><br><span class="line">url &#x3D; &#39;https:&#x2F;&#x2F;movie.douban.com&#x2F;cinema&#x2F;nowplaying&#x2F;shanghai&#x2F;&#39;</span><br><span class="line">response &#x3D; requests.get(url,headers&#x3D;headers)</span><br><span class="line">text &#x3D; response.text</span><br><span class="line"></span><br><span class="line"># 返回一个经过解码后的字符串，是str(unicode)类型</span><br><span class="line"># response.text</span><br><span class="line">#返回的是一个原生的字符串，就是从网页上抓取下来的，没有经过处理的字符串，是bytes类型</span><br><span class="line"># response.content</span><br><span class="line"></span><br><span class="line"># 2.将抓取下来的数据根据一定的规则进行提取</span><br><span class="line">html &#x3D; etree.HTML(text)</span><br><span class="line">ul &#x3D; html.xpath(&#39;&#x2F;&#x2F;ul[@class&#x3D;&quot;lists&quot;]&#39;)[0]</span><br><span class="line">lis &#x3D; ul.xpath(&#39;.&#x2F;li&#39;)</span><br><span class="line">movies &#x3D; []</span><br><span class="line">for li in lis:</span><br><span class="line">    title &#x3D; li.xpath(&quot;@data-title&quot;)[0]</span><br><span class="line">    score &#x3D; li.xpath(&quot;@data-score&quot;)[0]</span><br><span class="line">    duration &#x3D; li.xpath(&quot;@data-duration&quot;)[0]</span><br><span class="line">    region &#x3D; li.xpath(&quot;@data-region&quot;)[0]</span><br><span class="line">    director &#x3D; li.xpath(&quot;@data-director&quot;)[0]</span><br><span class="line">    actors &#x3D; li.xpath(&quot;@data-actors&quot;)[0]</span><br><span class="line">    thumbnail &#x3D; li.xpath(&quot;.&#x2F;&#x2F;img&#x2F;@src&quot;)</span><br><span class="line"></span><br><span class="line">    movie &#x3D; &#123;</span><br><span class="line">        &#39;title&#39;:title,</span><br><span class="line">        &#39;score&#39;:score,</span><br><span class="line">        &#39;duration&#39;:duration,</span><br><span class="line">        &#39;region&#39;:region,</span><br><span class="line">        &#39;director&#39;:director,</span><br><span class="line">        &#39;actors&#39;:actors,</span><br><span class="line">        &#39;thumbnail&#39;:thumbnail</span><br><span class="line">    &#125;</span><br><span class="line">    movies.append(movie)</span><br><span class="line"></span><br><span class="line">print(movies)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="实战2：使用-requests-和-xpath-爬取电影天堂"><a href="#实战2：使用-requests-和-xpath-爬取电影天堂" class="headerlink" title="实战2：使用 requests 和 xpath 爬取电影天堂"></a>实战2：使用 requests 和 xpath 爬取电影天堂</h3><p>示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">BASE_DOMAIN &#x3D; &#39;http:&#x2F;&#x2F;www.dytt8.net&#39;</span><br><span class="line">HEADERS &#x3D; &#123;</span><br><span class="line">    &#39;User_Agent&#39;: &#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;72.0.3626.121 Safari&#x2F;537.36&#39;,</span><br><span class="line">    &#39;Referer&#39;: &#39;http:&#x2F;&#x2F;www.dytt8.net&#x2F;html&#x2F;gndy&#x2F;dyzz&#x2F;list_23_2.html&#39;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def spider():</span><br><span class="line">    url &#x3D; &#39;http:&#x2F;&#x2F;www.dytt8.net&#x2F;html&#x2F;gndy&#x2F;dyzz&#x2F;list_23_1.html&#39;</span><br><span class="line">    resp &#x3D; requests.get(url, headers&#x3D;HEADERS)</span><br><span class="line">    # resp.content:经过编码后的字符串</span><br><span class="line">    # resp.text：没有经过编码，也就是Unicode字符串</span><br><span class="line">    # text：相当于是网页中的源代码了</span><br><span class="line">    text &#x3D; resp.content.decode(&#39;gbk&#39;)</span><br><span class="line"></span><br><span class="line">    # tree：经过 lxml 解析后的一个对象，以后使用这个对象的xpath方法，就可以提取一些想要的数据了</span><br><span class="line">    tree &#x3D; etree.HTML(text)</span><br><span class="line"></span><br><span class="line">    # xpath&#x2F;beautifulsoup4</span><br><span class="line">    all_a &#x3D; tree.xpath(&#39;&#x2F;&#x2F;div[@class&#x3D;&quot;co_content8&quot;]&#x2F;&#x2F;a&#39;)</span><br><span class="line">    for a in all_a:</span><br><span class="line">        title &#x3D; a.xpath(&quot;text()&quot;)[0]</span><br><span class="line">        href &#x3D; a.xpath(&quot;@href&quot;)[0]</span><br><span class="line">        if href.startswith(&#39;&#x2F;&#39;):</span><br><span class="line">            detail_url &#x3D; BASE_DOMAIN + href</span><br><span class="line">            crawl_detail(detail_url)</span><br><span class="line">            break</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def crawl_detail(url):</span><br><span class="line">    resp &#x3D; requests.get(url, headers&#x3D;HEADERS)</span><br><span class="line">    text &#x3D; resp.content.decode(&#39;gbk&#39;)</span><br><span class="line">    tree &#x3D; etree.HTML(text)</span><br><span class="line">    create_time &#x3D; tree.xpath(&#39;&#x2F;&#x2F;div[@class&#x3D;&quot;co_content8&quot;]&#x2F;ul&#x2F;text()&#39;)[0].strip()</span><br><span class="line">    imgs &#x3D; tree.xpath(&quot;&#x2F;&#x2F;div[@id&#x3D;&#39;Zoom&#39;]&#x2F;&#x2F;img&#x2F;@src&quot;)</span><br><span class="line"></span><br><span class="line">    # 电影海报</span><br><span class="line">    cover &#x3D; imgs[0]</span><br><span class="line">    # 电影截图</span><br><span class="line">    screenshoot &#x3D; imgs[1]</span><br><span class="line">    # 获取 span 标签下所有的文本</span><br><span class="line">    infos &#x3D; tree.xpath(&quot;&#x2F;&#x2F;div[@id&#x3D;&#39;Zoom&#39;]&#x2F;&#x2F;text()&quot;)</span><br><span class="line">    for index, info in enumerate(infos):</span><br><span class="line">        if info.startswith(&quot;◎年 代&quot;):</span><br><span class="line">            year &#x3D; info.replace(&quot;◎年 代&quot;, &quot;&quot;).strip()</span><br><span class="line"></span><br><span class="line">        if info.startswith(&quot;◎豆瓣评分&quot;):</span><br><span class="line">            douban_rating &#x3D; info.replace(&quot;◎豆瓣评分&quot;, &#39;&#39;).strip()</span><br><span class="line">            print(douban_rating)</span><br><span class="line"></span><br><span class="line">        if info.startswith(&quot;◎主　　演&quot;):</span><br><span class="line">            # 从当前位置，一直往下面遍历</span><br><span class="line">            actors &#x3D; [info]</span><br><span class="line">            for x in range(index + 1, len(infos)):</span><br><span class="line">                actor &#x3D; infos[x]</span><br><span class="line">                if actor.startswith(&quot;◎&quot;):</span><br><span class="line">                    break</span><br><span class="line">                actors.append(actor.strip())</span><br><span class="line">            print(&quot;,&quot;.join(actors))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    spider()</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="实战2-2：爬取电影天堂多页数据"><a href="#实战2-2：爬取电影天堂多页数据" class="headerlink" title="实战2-2：爬取电影天堂多页数据"></a>实战2-2：爬取电影天堂多页数据</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line">import requests</span><br><span class="line"></span><br><span class="line">BASE_DOMAIN &#x3D; &quot;http:&#x2F;&#x2F;dytt8.net&quot;</span><br><span class="line">HEADERS &#x3D; &#123;</span><br><span class="line">    &#39;User-Agent&#39;: &#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;72.0.3626.121 Safari&#x2F;537.36&#39;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def get_detail_urls(url):</span><br><span class="line">    response &#x3D; requests.get(url, headers&#x3D;HEADERS)</span><br><span class="line">    # response.text</span><br><span class="line">    # response.content</span><br><span class="line">    # requests库，默认会使用自己猜测的编码方式将抓取下来的网页进行解码，</span><br><span class="line">    # 然后存储到text 属性上去</span><br><span class="line">    # 在电影天堂的网页中，因为编码方式，requests库猜错了，所以就会产生乱码</span><br><span class="line">    text &#x3D; response.text</span><br><span class="line">    html &#x3D; etree.HTML(text)</span><br><span class="line">    detail_urls &#x3D; html.xpath(&#39;&#x2F;&#x2F;table[@class&#x3D;&quot;tbspan&quot;]&#x2F;&#x2F;a&#x2F;@href&#39;)</span><br><span class="line">    detail_urls &#x3D; map(lambda url: BASE_DOMAIN + url, detail_urls)</span><br><span class="line">    return detail_urls</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def parse_detail_page(url):</span><br><span class="line">    movie &#x3D; &#123;&#125;</span><br><span class="line">    response &#x3D; requests.get(url, headers&#x3D;HEADERS)</span><br><span class="line">    text &#x3D; response.content.decode(&#39;gbk&#39;)</span><br><span class="line">    html &#x3D; etree.HTML(text)</span><br><span class="line">    title &#x3D; html.xpath(&quot;&#x2F;&#x2F;div[@class&#x3D;&#39;title_all&#39;]&#x2F;&#x2F;font[@color&#x3D;&#39;#07519a&#39;]&#x2F;text()&quot;)[0]</span><br><span class="line">    movie[&#39;title&#39;] &#x3D; title</span><br><span class="line"></span><br><span class="line">    zoomE &#x3D; html.xpath(&quot;&#x2F;&#x2F;div[@id&#x3D;&#39;Zoom&#39;]&quot;)[0]</span><br><span class="line">    images &#x3D; zoomE.xpath(&quot;&#x2F;&#x2F;img&#x2F;@src&quot;)</span><br><span class="line">    cover &#x3D; images[0]</span><br><span class="line">    screenShot &#x3D; images[1]</span><br><span class="line">    movie[&#39;cover&#39;] &#x3D; cover</span><br><span class="line">    movie[&#39;screenShot&#39;] &#x3D; screenShot</span><br><span class="line"></span><br><span class="line">    def parse_info(info, rule):</span><br><span class="line">        return info.replace(rule, &quot;&quot;).strip()</span><br><span class="line"></span><br><span class="line">    infos &#x3D; zoomE.xpath(&quot;.&#x2F;&#x2F;text()&quot;)</span><br><span class="line">    for index, info in enumerate(infos):</span><br><span class="line">        # print(index)</span><br><span class="line">        # print(info)</span><br><span class="line">        # print(&#39;&#x3D;&#39;*30)</span><br><span class="line">        if info.startswith(&quot;◎年　　代&quot;):</span><br><span class="line">            info &#x3D; parse_info(info, &quot;◎年　　代&quot;)</span><br><span class="line">            movie[&#39;year&#39;] &#x3D; info</span><br><span class="line">        elif info.startswith(&quot;◎产　　地&quot;):</span><br><span class="line">            info &#x3D; parse_info(info, &quot;◎产　　地&quot;)</span><br><span class="line">            movie[&#39;country&#39;] &#x3D; info</span><br><span class="line">        elif info.startswith(&quot;◎类　　别&quot;):</span><br><span class="line">            info &#x3D; parse_info(info, &quot;◎类　　别&quot;)</span><br><span class="line">            movie[&#39;category&#39;] &#x3D; info</span><br><span class="line">        elif info.startswith(&quot;◎豆瓣评分&quot;):</span><br><span class="line">            info &#x3D; parse_info(info, &quot;◎豆瓣评分&quot;)</span><br><span class="line">            movie[&#39;douban_rating&#39;] &#x3D; info</span><br><span class="line">        elif info.startswith(&quot;◎片　　长&quot;):</span><br><span class="line">            info &#x3D; parse_info(info, &quot;◎片　　长&quot;)</span><br><span class="line">            movie[&#39;duration&#39;] &#x3D; info</span><br><span class="line">        elif info.startswith(&quot;◎导　　演&quot;):</span><br><span class="line">            info &#x3D; parse_info(info, &quot;◎导　　演&quot;)</span><br><span class="line">            movie[&#39;director&#39;] &#x3D; info</span><br><span class="line">        elif info.startswith(&quot;◎主　　演&quot;):</span><br><span class="line">            info &#x3D; parse_info(info, &quot;◎主　　演&quot;)</span><br><span class="line">            actors &#x3D; [info]</span><br><span class="line">            for x in range(index + 1, len(infos)):</span><br><span class="line">                actor &#x3D; infos[x].strip()</span><br><span class="line">                if actor.startswith(&quot;◎&quot;):</span><br><span class="line">                    break</span><br><span class="line">                actors.append(actor)</span><br><span class="line">            movie[&#39;actors&#39;] &#x3D; actors</span><br><span class="line">        elif info.startswith(&quot;◎简　　介&quot;):</span><br><span class="line">            info &#x3D; parse_info(info, &quot;◎简　　介&quot;)</span><br><span class="line">            for x in range(index + 1, len(infos)):</span><br><span class="line">                profile &#x3D; infos[x].strip()</span><br><span class="line">                movie[&#39;profile&#39;] &#x3D; profile</span><br><span class="line"></span><br><span class="line">    download_url &#x3D; html.xpath(&quot;&#x2F;&#x2F;td[@bgcolor&#x3D;&#39;#fdfddf&#39;]&#x2F;a&#x2F;@hvynyxkj&quot;)</span><br><span class="line">    print(download_url)</span><br><span class="line">    movie[&#39;download_url&#39;] &#x3D; download_url</span><br><span class="line">    return movie</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def spider():</span><br><span class="line">    base_url &#x3D; &#39;http:&#x2F;&#x2F;dytt8.net&#x2F;html&#x2F;gndy&#x2F;dyzz&#x2F;list_23_&#123;&#125;.html&#39;</span><br><span class="line">    movies &#x3D; []</span><br><span class="line">    for x in range(1, 2):</span><br><span class="line">        # 第一个for循环，是用来控制总共有7页</span><br><span class="line">        url &#x3D; base_url.format(x)</span><br><span class="line">        detail_urls &#x3D; get_detail_urls(url)</span><br><span class="line">        for detail_url in detail_urls:</span><br><span class="line">            # 第2个for循环，是用来遍历一页中所有电影的详情url</span><br><span class="line">            movie &#x3D; parse_detail_page(detail_url)</span><br><span class="line">            movies.append(movie)</span><br><span class="line">    # print(movies)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    spider()</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="chrome相关问题"><a href="#chrome相关问题" class="headerlink" title="chrome相关问题"></a>chrome相关问题</h4><p>在62版本（目前最新）中有一个bug，在页面302重定向的时候不能记录FormData数据。这是这个版本的一个bug。详细见以下链接：<a href="https://stackoverflow.com/questions/34015735/http-post-payload-not-visible-in-chrome-debugger。" target="_blank" rel="noopener">https://stackoverflow.com/questions/34015735/http-post-payload-not-visible-in-chrome-debugger%E3%80%82</a></p>
+<p>在金丝雀版本中已经解决了这个问题，可以下载这个版本继续，链接如下：<a href="https://www.google.com/chrome/canary/" target="_blank" rel="noopener">https://www.google.com/chrome/canary/</a></p>
+<h4 id="作业："><a href="#作业：" class="headerlink" title="作业："></a>作业：</h4><p>使用requests和xpath爬取腾讯招聘网信息。要求为获取每个职位的详情信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">BASE_DOMAIN &#x3D; &#39;https:&#x2F;&#x2F;hr.tencent.com&#x2F;&#39;</span><br><span class="line">HEADERS &#x3D; &#123;</span><br><span class="line">    &#39;User-Agent&#39;:&#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;72.0.3626.121 Safari&#x2F;537.36&#39;,</span><br><span class="line">    &#39;Referer&#39;:&#39;https:&#x2F;&#x2F;hr.tencent.com&#x2F;position.php?keywords&#x3D;python&amp;tid&#x3D;0&amp;lid&#x3D;2175&#39;,</span><br><span class="line">    &#39;Cookie&#39;:&#39;pgv_pvi&#x3D;728765440; PHPSESSID&#x3D;te5ir3afl3u2rm5b182nl2m5d5; pgv_si&#x3D;s4690324480&#39;,</span><br><span class="line">    &#39;Host&#39;:&#39;hr.tencent.com&#39;,</span><br><span class="line">    &#39;Upgrade-Insecure-Requests&#39;:&#39;1&#39;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def parse_detail_page(url):</span><br><span class="line">    position &#x3D; &#123;&#125;</span><br><span class="line">    response &#x3D; requests.get(url,headers&#x3D;HEADERS)</span><br><span class="line">    html &#x3D; etree.HTML(response.text)</span><br><span class="line">    title &#x3D; html.xpath(&quot;&#x2F;&#x2F;td[@id&#x3D;&#39;sharetitle&#39;]&#x2F;text()&quot;)[0]</span><br><span class="line">    tds &#x3D; html.xpath(&quot;&#x2F;&#x2F;tr[@class&#x3D;&#39;c bottomline&#39;]&#x2F;td&quot;)</span><br><span class="line">    address &#x3D; tds[0].xpath(&quot;.&#x2F;&#x2F;text()&quot;)[1]</span><br><span class="line">    category &#x3D; tds[1].xpath(&quot;.&#x2F;&#x2F;text()&quot;)[1]</span><br><span class="line">    nums &#x3D; tds[2].xpath(&quot;.&#x2F;&#x2F;text()&quot;)[1]</span><br><span class="line">    more_infos &#x3D; html.xpath(&quot;&#x2F;&#x2F;ul[@class&#x3D;&#39;squareli&#39;]&quot;) </span><br><span class="line">    duty &#x3D; more_infos[0].xpath(&quot;.&#x2F;&#x2F;text()&quot;)</span><br><span class="line">    require &#x3D; more_infos[1].xpath(&quot;.&#x2F;&#x2F;text()&quot;)</span><br><span class="line">    </span><br><span class="line">    position[&#39;title&#39;] &#x3D; title</span><br><span class="line">    position[&#39;address&#39;] &#x3D; address</span><br><span class="line">    position[&#39;category&#39;] &#x3D; category</span><br><span class="line">    position[&#39;nums&#39;] &#x3D; nums</span><br><span class="line">    position[&#39;duty&#39;] &#x3D; duty</span><br><span class="line">    position[&#39;require&#39;] &#x3D; require</span><br><span class="line">    return position</span><br><span class="line"></span><br><span class="line">def get_detail_urls(url):</span><br><span class="line">    response &#x3D; requests.get(&#39;https:&#x2F;&#x2F;hr.tencent.com&#x2F;position.php?keywords&#x3D;python&amp;tid&#x3D;0&amp;start&#x3D;0#a&#39;,headers&#x3D;HEADERS)</span><br><span class="line">    text &#x3D; response.text </span><br><span class="line">    html &#x3D; etree.HTML(text)</span><br><span class="line">    links &#x3D; html.xpath(&quot;&#x2F;&#x2F;tr[@class&#x3D;&#39;even&#39;]&#x2F;&#x2F;a&#x2F;@href&quot;)</span><br><span class="line">    links &#x3D; map(lambda url:BASE_DOMAIN+url,links)</span><br><span class="line">    return links</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def spider():</span><br><span class="line">    base_url &#x3D; &quot;https:&#x2F;&#x2F;hr.tencent.com&#x2F;position.php?keywords&#x3D;python&amp;tid&#x3D;0&amp;start&#x3D;&#123;&#125;#a&quot;</span><br><span class="line">    positions &#x3D; []</span><br><span class="line">    for x in range(0,43):</span><br><span class="line">        x *&#x3D; 10</span><br><span class="line">        url &#x3D; base_url.format(x)</span><br><span class="line">        detail_urls &#x3D; get_detail_urls(url)</span><br><span class="line">        for detail_url in detail_urls:</span><br><span class="line">            position &#x3D; parse_detail_page(detail_url)</span><br><span class="line">            positions.append(position)</span><br><span class="line">            print(position)</span><br><span class="line">    # print(positions)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    spider()</span><br></pre></td></tr></table></figure>
+
+
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/13/%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E6%8F%90%E5%8F%96-1-%E2%80%94%E2%80%94xpath%E8%AF%AD%E6%B3%95%E4%B8%8Elxml%E5%BA%93/" data-id="ck6m69dv9005c68vvgnln1jw5"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" rel="tag">网络爬虫</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/13/%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E6%8F%90%E5%8F%96-2-%E2%80%94%E2%80%94BeautifulSoup4%E5%BA%93/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            二、数据提取(2)——BeautifulSoup4库
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/13/%E4%B8%80%E3%80%81%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82-3-%E2%80%94%E2%80%94requests%E5%BA%93/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">一、网络请求(3)——requests库</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

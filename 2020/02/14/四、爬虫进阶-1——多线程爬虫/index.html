@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    四、爬虫进阶(1）——多线程爬虫 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-四、爬虫进阶-1——多线程爬虫" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  四、爬虫进阶(1）——多线程爬虫
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/14/%E5%9B%9B%E3%80%81%E7%88%AC%E8%99%AB%E8%BF%9B%E9%98%B6-1%E2%80%94%E2%80%94%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%88%AC%E8%99%AB/" class="article-date">
+  <time datetime="2020-02-14T12:18:31.000Z" itemprop="datePublished">2020-02-14</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/">网络爬虫</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.2k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">14分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="多线程爬虫"><a href="#多线程爬虫" class="headerlink" title="多线程爬虫"></a>多线程爬虫</h2><a id="more"></a>
+<p>有些时候，比如下载图片，因为下载图片是一个耗时的操作。如果采用之前那种同步的方式下载。那效率肯会特别慢。这时候我们就可以考虑使用多线程的方式来下载图片。</p>
+<h3 id="多线程介绍："><a href="#多线程介绍：" class="headerlink" title="多线程介绍："></a>多线程介绍：</h3><p>多线程是为了同步完成多项任务，通过提高资源使用效率来提高系统的效率。线程是在同一时间需要完成多项任务的时候实现的。<br>最简单的比喻多线程就像火车的每一节车厢，而进程则是火车。车厢离开火车是无法跑动的，同理火车也可以有多节车厢。多线程的出现就是为了提高效率。同时它的出现也带来了一些问题。更多介绍请参考：<a href="https://baike.baidu.com/item/多线程/1190404?fr=aladdin" target="_blank" rel="noopener">https://baike.baidu.com/item/多线程/1190404?fr=aladdin</a></p>
+<h3 id="threading模块介绍："><a href="#threading模块介绍：" class="headerlink" title="threading模块介绍："></a>threading模块介绍：</h3><p><code>threading</code>模块是<code>python</code>中专门提供用来做多线程编程的模块。<code>threading</code>模块中最常用的类是<code>Thread</code>。以下看一个简单的多线程程序：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">import threading</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">def coding():</span><br><span class="line">    for x in range(3):</span><br><span class="line">        print(&#39;%s正在写代码&#39; % x)</span><br><span class="line">        time.sleep(1)</span><br><span class="line"></span><br><span class="line">def drawing():</span><br><span class="line">    for x in range(3):</span><br><span class="line">        print(&#39;%s正在画图&#39; % x)</span><br><span class="line">        time.sleep(1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def single_thread():</span><br><span class="line">    coding()</span><br><span class="line">    drawing()</span><br><span class="line"></span><br><span class="line">def multi_thread():</span><br><span class="line">    t1 &#x3D; threading.Thread(target&#x3D;coding)</span><br><span class="line">    t2 &#x3D; threading.Thread(target&#x3D;drawing)</span><br><span class="line"></span><br><span class="line">    t1.start()</span><br><span class="line">    t2.start()</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    multi_thread()</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看线程数："><a href="#查看线程数：" class="headerlink" title="查看线程数："></a>查看线程数：</h4><p>使用<code>threading.enumerate()</code>函数便可以看到当前线程的数量。</p>
+<h4 id="查看当前线程的名字："><a href="#查看当前线程的名字：" class="headerlink" title="查看当前线程的名字："></a>查看当前线程的名字：</h4><p>使用<code>threading.current_thread()</code>可以看到当前线程的信息。</p>
+<h4 id="继承自threading-Thread类："><a href="#继承自threading-Thread类：" class="headerlink" title="继承自threading.Thread类："></a>继承自<code>threading.Thread</code>类：</h4><p>为了让线程代码更好的封装。可以使用<code>threading</code>模块下的<code>Thread</code>类，继承自这个类，然后实现<code>run</code>方法，线程就会自动运行<code>run</code>方法中的代码。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import threading</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">class CodingThread(threading.Thread):</span><br><span class="line">    def run(self):</span><br><span class="line">        for x in range(3):</span><br><span class="line">            print(&#39;%s正在写代码&#39; % threading.current_thread())</span><br><span class="line">            time.sleep(1)</span><br><span class="line"></span><br><span class="line">class DrawingThread(threading.Thread):</span><br><span class="line">    def run(self):</span><br><span class="line">        for x in range(3):</span><br><span class="line">            print(&#39;%s正在画图&#39; % threading.current_thread())</span><br><span class="line">            time.sleep(1)</span><br><span class="line"></span><br><span class="line">def multi_thread():</span><br><span class="line">    t1 &#x3D; CodingThread()</span><br><span class="line">    t2 &#x3D; DrawingThread()</span><br><span class="line"></span><br><span class="line">    t1.start()</span><br><span class="line">    t2.start()</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    multi_thread()</span><br></pre></td></tr></table></figure>
+
+<h4 id="多线程共享全局变量的问题："><a href="#多线程共享全局变量的问题：" class="headerlink" title="多线程共享全局变量的问题："></a>多线程共享全局变量的问题：</h4><p>多线程都是在同一个进程中运行的。因此在进程中的全局变量所有线程都是可共享的。这就造成了一个问题，因为线程执行的顺序是无序的。有可能会造成数据错误。比如以下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import threading</span><br><span class="line"></span><br><span class="line">tickets &#x3D; 0</span><br><span class="line"></span><br><span class="line">def get_ticket():</span><br><span class="line">    global tickets</span><br><span class="line">    for x in range(1000000):</span><br><span class="line">        tickets +&#x3D; 1</span><br><span class="line">    print(&#39;tickets:%d&#39;%tickets)</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    for x in range(2):</span><br><span class="line">        t &#x3D; threading.Thread(target&#x3D;get_ticket)</span><br><span class="line">        t.start()</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>以上结果正常来讲应该是6，但是因为多线程运行的不确定性。因此最后的结果可能是随机的。</p>
+<h4 id="锁机制："><a href="#锁机制：" class="headerlink" title="锁机制："></a>锁机制：</h4><p>为了解决以上使用共享全局变量的问题。<code>threading</code>提供了一个<code>Lock</code>类，这个类可以在某个线程访问某个变量的时候加锁，其他线程此时就不能进来，直到当前线程处理完后，把锁释放了，其他线程才能进来处理。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import threading</span><br><span class="line"></span><br><span class="line">VALUE &#x3D; 0</span><br><span class="line"></span><br><span class="line">gLock &#x3D; threading.Lock()</span><br><span class="line"></span><br><span class="line">def add_value():</span><br><span class="line">    global VALUE</span><br><span class="line">    gLock.acquire()</span><br><span class="line">    for x in range(1000000):</span><br><span class="line">        VALUE +&#x3D; 1</span><br><span class="line">    gLock.release()</span><br><span class="line">    print(&#39;value：%d&#39;%VALUE)</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    for x in range(2):</span><br><span class="line">        t &#x3D; threading.Thread(target&#x3D;add_value)</span><br><span class="line">        t.start()</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Lock版本生产者和消费者模式："><a href="#Lock版本生产者和消费者模式：" class="headerlink" title="Lock版本生产者和消费者模式："></a>Lock版本生产者和消费者模式：</h3><p>生产者和消费者模式是多线程开发中经常见到的一种模式。生产者的线程专门用来生产一些数据，然后存放到一个中间的变量中。消费者再从这个中间的变量中取出数据进行消费。但是因为要使用中间变量，中间变量经常是一些全局变量，因此需要使用锁来保证数据完整性。以下是使用<code>threading.Lock</code>锁实现的“生产者与消费者模式”的一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">import threading</span><br><span class="line">import random</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">gMoney &#x3D; 1000</span><br><span class="line">gLock &#x3D; threading.Lock()</span><br><span class="line"># 记录生产者生产的次数，达到10次就不再生产</span><br><span class="line">gTimes &#x3D; 0</span><br><span class="line"></span><br><span class="line">class Producer(threading.Thread):</span><br><span class="line">    def run(self):</span><br><span class="line">        global gMoney</span><br><span class="line">        global gLock</span><br><span class="line">        global gTimes</span><br><span class="line">        while True:</span><br><span class="line">            money &#x3D; random.randint(100, 1000)</span><br><span class="line">            gLock.acquire()</span><br><span class="line">            # 如果已经达到10次了，就不再生产了</span><br><span class="line">            if gTimes &gt;&#x3D; 10:</span><br><span class="line">                gLock.release()</span><br><span class="line">                break</span><br><span class="line">            gMoney +&#x3D; money</span><br><span class="line">            print(&#39;%s当前存入%s元钱，剩余%s元钱&#39; % (threading.current_thread(), money, gMoney))</span><br><span class="line">            gTimes +&#x3D; 1</span><br><span class="line">            time.sleep(0.5)</span><br><span class="line">            gLock.release()</span><br><span class="line"></span><br><span class="line">class Consumer(threading.Thread):</span><br><span class="line">    def run(self):</span><br><span class="line">        global gMoney</span><br><span class="line">        global gLock</span><br><span class="line">        global gTimes</span><br><span class="line">        while True:</span><br><span class="line">            money &#x3D; random.randint(100, 500)</span><br><span class="line">            gLock.acquire()</span><br><span class="line">            if gMoney &gt; money:</span><br><span class="line">                gMoney -&#x3D; money</span><br><span class="line">                print(&#39;%s当前取出%s元钱，剩余%s元钱&#39; % (threading.current_thread(), money, gMoney))</span><br><span class="line">                time.sleep(0.5)</span><br><span class="line">            else:</span><br><span class="line">                # 如果钱不够了，有可能是已经超过了次数，这时候就判断一下</span><br><span class="line">                if gTimes &gt;&#x3D; 10:</span><br><span class="line">                    gLock.release()</span><br><span class="line">                    break</span><br><span class="line">                print(&quot;%s当前想取%s元钱，剩余%s元钱，不足！&quot; % (threading.current_thread(),money,gMoney))</span><br><span class="line">            gLock.release()</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    for x in range(5):</span><br><span class="line">        Consumer(name&#x3D;&#39;消费者线程%d&#39;%x).start()</span><br><span class="line"></span><br><span class="line">    for x in range(5):</span><br><span class="line">        Producer(name&#x3D;&#39;生产者线程%d&#39;%x).start()</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Condition版的生产者与消费者模式："><a href="#Condition版的生产者与消费者模式：" class="headerlink" title="Condition版的生产者与消费者模式："></a>Condition版的生产者与消费者模式：</h3><p><code>Lock</code>版本的生产者与消费者模式可以正常的运行。但是存在一个不足，在消费者中，总是通过<code>while True</code>死循环并且上锁的方式去判断钱够不够。上锁是一个很耗费CPU资源的行为。因此这种方式不是最好的。还有一种更好的方式便是使用<code>threading.Condition</code>来实现。<code>threading.Condition</code>可以在没有数据的时候处于阻塞等待状态。一旦有合适的数据了，还可以使用<code>notify</code>相关的函数来通知其他处于等待状态的线程。这样就可以不用做一些无用的上锁和解锁的操作。可以提高程序的性能。首先对<code>threading.Condition</code>相关的函数做个介绍，<code>threading.Condition</code>类似<code>threading.Lock</code>，可以在修改全局数据的时候进行上锁，也可以在修改完毕后进行解锁。以下将一些常用的函数做个简单的介绍：</p>
+<ol>
+<li><code>acquire</code>：上锁。</li>
+<li><code>release</code>：解锁。</li>
+<li><code>wait</code>：将当前线程处于等待状态，并且会释放锁。可以被其他线程使用<code>notify</code>和<code>notify_all</code>函数唤醒。被唤醒后会继续等待上锁，上锁后继续执行下面的代码。</li>
+<li><code>notify</code>：通知某个正在等待的线程，默认是第1个等待的线程。</li>
+<li><code>notify_all</code>：通知所有正在等待的线程。<code>notify</code>和<code>notify_all</code>不会释放锁。并且需要在<code>release</code>之前调用。</li>
+</ol>
+<p><code>Condition</code>版的生产者与消费者模式代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">import threading</span><br><span class="line">import random</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">gMoney &#x3D; 1000</span><br><span class="line">gCondition &#x3D; threading.Condition()</span><br><span class="line">gTimes &#x3D; 0</span><br><span class="line">gTotalTimes &#x3D; 5</span><br><span class="line"></span><br><span class="line">class Producer(threading.Thread):</span><br><span class="line">    def run(self):</span><br><span class="line">        global gMoney</span><br><span class="line">        global gCondition</span><br><span class="line">        global gTimes</span><br><span class="line">        while True:</span><br><span class="line">            money &#x3D; random.randint(100, 1000)</span><br><span class="line">            gCondition.acquire()</span><br><span class="line">            if gTimes &gt;&#x3D; gTotalTimes:</span><br><span class="line">                gCondition.release()</span><br><span class="line">                print(&#39;当前生产者总共生产了%s次&#39;%gTimes)</span><br><span class="line">                break</span><br><span class="line">            gMoney +&#x3D; money</span><br><span class="line">            print(&#39;%s当前存入%s元钱，剩余%s元钱&#39; % (threading.current_thread(), money, gMoney))</span><br><span class="line">            gTimes +&#x3D; 1</span><br><span class="line">            time.sleep(0.5)</span><br><span class="line">            gCondition.notify_all()</span><br><span class="line">            gCondition.release()</span><br><span class="line"></span><br><span class="line">class Consumer(threading.Thread):</span><br><span class="line">    def run(self):</span><br><span class="line">        global gMoney</span><br><span class="line">        global gCondition</span><br><span class="line">        while True:</span><br><span class="line">            money &#x3D; random.randint(100, 500)</span><br><span class="line">            gCondition.acquire()</span><br><span class="line">            # 这里要给个while循环判断，因为等轮到这个线程的时候</span><br><span class="line">            # 条件有可能又不满足了</span><br><span class="line">            while gMoney &lt; money:</span><br><span class="line">                if gTimes &gt;&#x3D; gTotalTimes:</span><br><span class="line">                    gCondition.release()</span><br><span class="line">                    return</span><br><span class="line">                print(&#39;%s准备取%s元钱，剩余%s元钱，不足！&#39;%(threading.current_thread(),money,gMoney))</span><br><span class="line">                gCondition.wait()</span><br><span class="line">            gMoney -&#x3D; money</span><br><span class="line">            print(&#39;%s当前取出%s元钱，剩余%s元钱&#39; % (threading.current_thread(), money, gMoney))</span><br><span class="line">            time.sleep(0.5)</span><br><span class="line">            gCondition.release()</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    for x in range(5):</span><br><span class="line">        Consumer(name&#x3D;&#39;消费者线程%d&#39;%x).start()</span><br><span class="line"></span><br><span class="line">    for x in range(2):</span><br><span class="line">        Producer(name&#x3D;&#39;生产者线程%d&#39;%x).start()</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Queue线程安全队列："><a href="#Queue线程安全队列：" class="headerlink" title="Queue线程安全队列："></a>Queue线程安全队列：</h3><p>在线程中，访问一些全局变量，加锁是一个经常的过程。如果你是想把一些数据存储到某个队列中，那么Python内置了一个线程安全的模块叫做<code>queue</code>模块。Python中的queue模块中提供了同步的、线程安全的队列类，包括FIFO（先进先出）队列Queue，LIFO（后入先出）队列LifoQueue。这些队列都实现了锁原语（可以理解为原子操作，即要么不做，要么都做完），能够在多线程中直接使用。可以使用队列来实现线程间的同步。相关的函数如下：</p>
+<ol>
+<li>初始化Queue(maxsize)：创建一个先进先出的队列。</li>
+<li>qsize()：返回队列的大小。</li>
+<li>empty()：判断队列是否为空。</li>
+<li>full()：判断队列是否满了。</li>
+<li>get()：从队列中取最后一个数据。</li>
+<li>put()：将一个数据放到队列中。</li>
+</ol>
+<h3 id="使用生产者与消费者模式多线程下载表情包："><a href="#使用生产者与消费者模式多线程下载表情包：" class="headerlink" title="使用生产者与消费者模式多线程下载表情包："></a>使用生产者与消费者模式多线程下载表情包：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">import threading</span><br><span class="line">import requests</span><br><span class="line">from lxml import etree</span><br><span class="line">from urllib import request</span><br><span class="line">import os</span><br><span class="line">import re</span><br><span class="line">from queue import Queue</span><br><span class="line"></span><br><span class="line">class Producer(threading.Thread):</span><br><span class="line">    headers &#x3D; &#123;</span><br><span class="line">        &#39;User-Agent&#39;: &#39;Mozilla&#x2F;5.0 (Windows NT 10.0; Win64; x64) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;62.0.3202.94 Safari&#x2F;537.36&#39;</span><br><span class="line">    &#125;</span><br><span class="line">    def __init__(self,page_queue,img_queue,*args,**kwargs):</span><br><span class="line">        super(Producer, self).__init__(*args,**kwargs)</span><br><span class="line">        self.page_queue &#x3D; page_queue</span><br><span class="line">        self.img_queue &#x3D; img_queue</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    def run(self):</span><br><span class="line">        while True:</span><br><span class="line">            if self.page_queue.empty():</span><br><span class="line">                break</span><br><span class="line">            url &#x3D; self.page_queue.get()</span><br><span class="line">            self.parse_page(url)</span><br><span class="line"></span><br><span class="line">    def parse_page(self,url):</span><br><span class="line">        response &#x3D; requests.get(url,headers&#x3D;self.headers)</span><br><span class="line">        text &#x3D; response.text</span><br><span class="line">        html &#x3D; etree.HTML(text)</span><br><span class="line">        imgs &#x3D; html.xpath(&quot;&#x2F;&#x2F;div[@class&#x3D;&#39;page-content text-center&#39;]&#x2F;&#x2F;a&#x2F;&#x2F;img&quot;)</span><br><span class="line">        for img in imgs:</span><br><span class="line">            if img.get(&#39;class&#39;) &#x3D;&#x3D; &#39;gif&#39;:</span><br><span class="line">                continue</span><br><span class="line">            img_url &#x3D; img.xpath(&quot;.&#x2F;&#x2F;@data-original&quot;)[0]</span><br><span class="line">            suffix &#x3D; os.path.splitext(img_url)[1]</span><br><span class="line">            alt &#x3D; img.xpath(&quot;.&#x2F;&#x2F;@alt&quot;)[0]</span><br><span class="line">            alt &#x3D; re.sub(r&#39;[，。？?,&#x2F;\\·]&#39;,&#39;&#39;,alt)</span><br><span class="line">            img_name &#x3D; alt + suffix</span><br><span class="line">            self.img_queue.put((img_url,img_name))</span><br><span class="line"></span><br><span class="line">class Consumer(threading.Thread):</span><br><span class="line">    def __init__(self,page_queue,img_queue,*args,**kwargs):</span><br><span class="line">        super(Consumer, self).__init__(*args,**kwargs)</span><br><span class="line">        self.page_queue &#x3D; page_queue</span><br><span class="line">        self.img_queue &#x3D; img_queue</span><br><span class="line"></span><br><span class="line">    def run(self):</span><br><span class="line">        while True:</span><br><span class="line">            if self.img_queue.empty():</span><br><span class="line">                if self.page_queue.empty():</span><br><span class="line">                    return</span><br><span class="line">            img &#x3D; self.img_queue.get(block&#x3D;True)</span><br><span class="line">            url,filename &#x3D; img</span><br><span class="line">            request.urlretrieve(url,&#39;images&#x2F;&#39;+filename)</span><br><span class="line">            print(filename+&#39;  下载完成！&#39;)</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    page_queue &#x3D; Queue(100)</span><br><span class="line">    img_queue &#x3D; Queue(500)</span><br><span class="line">    for x in range(1,101):</span><br><span class="line">        url &#x3D; &quot;http:&#x2F;&#x2F;www.doutula.com&#x2F;photo&#x2F;list&#x2F;?page&#x3D;%d&quot; % x</span><br><span class="line">        page_queue.put(url)</span><br><span class="line"></span><br><span class="line">    for x in range(5):</span><br><span class="line">        t &#x3D; Producer(page_queue,img_queue)</span><br><span class="line">        t.start()</span><br><span class="line"></span><br><span class="line">    for x in range(5):</span><br><span class="line">        t &#x3D; Consumer(page_queue,img_queue)</span><br><span class="line">        t.start()</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="GIL全局解释器锁："><a href="#GIL全局解释器锁：" class="headerlink" title="GIL全局解释器锁："></a>GIL全局解释器锁：</h3><p>Python自带的解释器是<code>CPython</code>。<code>CPython</code>解释器的多线程实际上是一个假的多线程（在多核CPU中，只能利用一核，不能利用多核）。同一时刻只有一个线程在执行，为了保证同一时刻只有一个线程在执行，在<code>CPython</code>解释器中有一个东西叫做<code>GIL（Global Intepreter Lock）</code>，叫做全局解释器锁。这个解释器锁是有必要的。因为<code>CPython</code>解释器的内存管理不是线程安全的。当然除了<code>CPython</code>解释器，还有其他的解释器，有些解释器是没有<code>GIL</code>锁的，见下面：</p>
+<ol>
+<li><code>Jython</code>：用Java实现的Python解释器。不存在GIL锁。更多详情请见：<a href="https://zh.wikipedia.org/wiki/Jython" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/Jython</a></li>
+<li><code>IronPython</code>：用<code>.net</code>实现的Python解释器。不存在GIL锁。更多详情请见：<a href="https://zh.wikipedia.org/wiki/IronPython" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/IronPython</a></li>
+<li><code>PyPy</code>：用<code>Python</code>实现的Python解释器。存在GIL锁。更多详情请见：<a href="https://zh.wikipedia.org/wiki/PyPy" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/PyPy</a><br>GIL虽然是一个假的多线程。但是在处理一些IO操作（比如文件读写和网络请求）还是可以在很大程度上提高效率的。在IO操作上建议使用多线程提高效率。在一些CPU计算操作上不建议使用多线程，而建议使用多进程。</li>
+</ol>
+<h3 id="多线程下载百思不得姐段子作业："><a href="#多线程下载百思不得姐段子作业：" class="headerlink" title="多线程下载百思不得姐段子作业："></a>多线程下载百思不得姐段子作业：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">from lxml import etree</span><br><span class="line">import threading</span><br><span class="line">from queue import Queue</span><br><span class="line">import csv</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class BSSpider(threading.Thread):</span><br><span class="line">    headers &#x3D; &#123;</span><br><span class="line">        &#39;User-Agent&#39;: &#39;Mozilla&#x2F;5.0 (Windows NT 10.0; Win64; x64) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;62.0.3202.94 Safari&#x2F;537.36&#39;</span><br><span class="line">    &#125;</span><br><span class="line">    def __init__(self,page_queue,joke_queue,*args,**kwargs):</span><br><span class="line">        super(BSSpider, self).__init__(*args,**kwargs)</span><br><span class="line">        self.base_domain &#x3D; &#39;http:&#x2F;&#x2F;www.budejie.com&#39;</span><br><span class="line">        self.page_queue &#x3D; page_queue</span><br><span class="line">        self.joke_queue &#x3D; joke_queue</span><br><span class="line"></span><br><span class="line">    def run(self):</span><br><span class="line">        while True:</span><br><span class="line">            if self.page_queue.empty():</span><br><span class="line">                break</span><br><span class="line">            url &#x3D; self.page_queue.get()</span><br><span class="line">            response &#x3D; requests.get(url, headers&#x3D;self.headers)</span><br><span class="line">            text &#x3D; response.text</span><br><span class="line">            html &#x3D; etree.HTML(text)</span><br><span class="line">            descs &#x3D; html.xpath(&quot;&#x2F;&#x2F;div[@class&#x3D;&#39;j-r-list-c-desc&#39;]&quot;)</span><br><span class="line">            for desc in descs:</span><br><span class="line">                jokes &#x3D; desc.xpath(&quot;.&#x2F;&#x2F;text()&quot;)</span><br><span class="line">                joke &#x3D; &quot;\n&quot;.join(jokes).strip()</span><br><span class="line">                link &#x3D; self.base_domain+desc.xpath(&quot;.&#x2F;&#x2F;a&#x2F;@href&quot;)[0]</span><br><span class="line">                self.joke_queue.put((joke,link))</span><br><span class="line">            print(&#39;&#x3D;&#39;*30+&quot;第%s页下载完成！&quot;%url.split(&#39;&#x2F;&#39;)[-1]+&quot;&#x3D;&quot;*30)</span><br><span class="line"></span><br><span class="line">class BSWriter(threading.Thread):</span><br><span class="line">    headers &#x3D; &#123;</span><br><span class="line">        &#39;User-Agent&#39;: &#39;Mozilla&#x2F;5.0 (Windows NT 10.0; Win64; x64) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;62.0.3202.94 Safari&#x2F;537.36&#39;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    def __init__(self, joke_queue, writer,gLock, *args, **kwargs):</span><br><span class="line">        super(BSWriter, self).__init__(*args, **kwargs)</span><br><span class="line">        self.joke_queue &#x3D; joke_queue</span><br><span class="line">        self.writer &#x3D; writer</span><br><span class="line">        self.lock &#x3D; gLock</span><br><span class="line"></span><br><span class="line">    def run(self):</span><br><span class="line">        while True:</span><br><span class="line">            try:</span><br><span class="line">                joke_info &#x3D; self.joke_queue.get(timeout&#x3D;40)</span><br><span class="line">                joke,link &#x3D; joke_info</span><br><span class="line">                self.lock.acquire()</span><br><span class="line">                self.writer.writerow((joke,link))</span><br><span class="line">                self.lock.release()</span><br><span class="line">                print(&#39;保存一条&#39;)</span><br><span class="line">            except:</span><br><span class="line">                break</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    page_queue &#x3D; Queue(10)</span><br><span class="line">    joke_queue &#x3D; Queue(500)</span><br><span class="line">    gLock &#x3D; threading.Lock()</span><br><span class="line">    fp &#x3D; open(&#39;bsbdj.csv&#39;, &#39;a&#39;,newline&#x3D;&#39;&#39;, encoding&#x3D;&#39;utf-8&#39;)</span><br><span class="line">    writer &#x3D; csv.writer(fp)</span><br><span class="line">    writer.writerow((&#39;content&#39;, &#39;link&#39;))</span><br><span class="line"></span><br><span class="line">    for x in range(1,11):</span><br><span class="line">        url &#x3D; &#39;http:&#x2F;&#x2F;www.budejie.com&#x2F;text&#x2F;%d&#39; % x</span><br><span class="line">        page_queue.put(url)</span><br><span class="line"></span><br><span class="line">    for x in range(5):</span><br><span class="line">        t &#x3D; BSSpider(page_queue,joke_queue)</span><br><span class="line">        t.start()</span><br><span class="line"></span><br><span class="line">    for x in range(5):</span><br><span class="line">        t &#x3D; BSWriter(joke_queue,writer,gLock)</span><br><span class="line">        t.start()</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/14/%E5%9B%9B%E3%80%81%E7%88%AC%E8%99%AB%E8%BF%9B%E9%98%B6-1%E2%80%94%E2%80%94%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%88%AC%E8%99%AB/" data-id="ck6m69dvn006h68vv2vf44wrf"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" rel="tag">网络爬虫</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/14/%E5%9B%9B%E3%80%81%E7%88%AC%E8%99%AB%E8%BF%9B%E9%98%B6-2%E2%80%94%E2%80%94ajax%E6%95%B0%E6%8D%AE%E7%88%AC%E5%8F%96/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            四、爬虫进阶(2）——ajax数据爬取
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/13/%E4%B8%89%E3%80%81%E6%95%B0%E6%8D%AE%E5%AD%98%E5%8F%96-4-%E2%80%94%E2%80%94MongoDB%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">三、数据存取(4)——MongoDB数据库操作</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

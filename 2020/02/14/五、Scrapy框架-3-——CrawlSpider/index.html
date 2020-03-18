@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    五、Scrapy框架(3)——CrawlSpider |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-五、Scrapy框架-3-——CrawlSpider" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  五、Scrapy框架(3)——CrawlSpider
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-3-%E2%80%94%E2%80%94CrawlSpider/" class="article-date">
+  <time datetime="2020-02-14T12:31:53.000Z" itemprop="datePublished">2020-02-14</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/">网络爬虫</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.7k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">8分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="CrawlSpider"><a href="#CrawlSpider" class="headerlink" title="CrawlSpider"></a>CrawlSpider</h2><a id="more"></a>
+<p>在上一个糗事百科的爬虫案例中。我们是自己在解析完整个页面后获取下一页的url，然后重新发送一个请求。有时候我们想要这样做，只要满足某个条件的url，都给我进行爬取。那么这时候我们就可以通过<code>CrawlSpider</code>来帮我们完成了。<code>CrawlSpider</code>继承自<code>Spider</code>，只不过是在之前的基础之上增加了新的功能，可以定义爬取的url的规则，以后scrapy碰到满足条件的url都进行爬取，而不用手动的<code>yield Request</code>。</p>
+<h3 id="CrawlSpider爬虫："><a href="#CrawlSpider爬虫：" class="headerlink" title="CrawlSpider爬虫："></a>CrawlSpider爬虫：</h3><h4 id="创建CrawlSpider爬虫："><a href="#创建CrawlSpider爬虫：" class="headerlink" title="创建CrawlSpider爬虫："></a>创建CrawlSpider爬虫：</h4><p>之前创建爬虫的方式是通过<code>scrapy genspider [爬虫名字] [域名]</code>的方式创建的。如果想要创建<code>CrawlSpider</code>爬虫，那么应该通过以下命令创建：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy genspider -c crawl [爬虫名字] [域名]</span><br></pre></td></tr></table></figure>
+
+<h3 id="LinkExtractors链接提取器："><a href="#LinkExtractors链接提取器：" class="headerlink" title="LinkExtractors链接提取器："></a>LinkExtractors链接提取器：</h3><p>使用<code>LinkExtractors</code>可以不用程序员自己提取想要的url，然后发送请求。这些工作都可以交给<code>LinkExtractors</code>，他会在所有爬的页面中找到满足规则的<code>url</code>，实现自动的爬取。以下对<code>LinkExtractors</code>类做一个简单的介绍：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class scrapy.linkextractors.LinkExtractor(</span><br><span class="line">    allow &#x3D; (),</span><br><span class="line">    deny &#x3D; (),</span><br><span class="line">    allow_domains &#x3D; (),</span><br><span class="line">    deny_domains &#x3D; (),</span><br><span class="line">    deny_extensions &#x3D; None,</span><br><span class="line">    restrict_xpaths &#x3D; (),</span><br><span class="line">    tags &#x3D; (&#39;a&#39;,&#39;area&#39;),</span><br><span class="line">    attrs &#x3D; (&#39;href&#39;),</span><br><span class="line">    canonicalize &#x3D; True,</span><br><span class="line">    unique &#x3D; True,</span><br><span class="line">    process_value &#x3D; None</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>主要参数讲解：</p>
+<ul>
+<li>allow：允许的url。所有满足这个正则表达式的url都会被提取。</li>
+<li>deny：禁止的url。所有满足这个正则表达式的url都不会被提取。</li>
+<li>allow_domains：允许的域名。只有在这个里面指定的域名的url才会被提取。</li>
+<li>deny_domains：禁止的域名。所有在这个里面指定的域名的url都不会被提取。</li>
+<li>restrict_xpaths：严格的xpath。和allow共同过滤链接。</li>
+</ul>
+<h3 id="Rule规则类："><a href="#Rule规则类：" class="headerlink" title="Rule规则类："></a>Rule规则类：</h3><p>定义爬虫的规则类。以下对这个类做一个简单的介绍：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class scrapy.spiders.Rule(</span><br><span class="line">    link_extractor, </span><br><span class="line">    callback &#x3D; None, </span><br><span class="line">    cb_kwargs &#x3D; None, </span><br><span class="line">    follow &#x3D; None, </span><br><span class="line">    process_links &#x3D; None, </span><br><span class="line">    process_request &#x3D; None</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>主要参数讲解：</p>
+<ul>
+<li>link_extractor：一个<code>LinkExtractor</code>对象，用于定义爬取规则。</li>
+<li>callback：满足这个规则的url，应该要执行哪个回调函数。因为<code>CrawlSpider</code>使用了<code>parse</code>作为回调函数，因此不要覆盖<code>parse</code>作为回调函数自己的回调函数。</li>
+<li>follow：指定根据该规则从response中提取的链接是否需要跟进。</li>
+<li>process_links：从link_extractor中获取到链接后会传递给这个函数，用来过滤不需要爬取的链接。</li>
+</ul>
+<h3 id="微信小程序社区CrawlSpider案例"><a href="#微信小程序社区CrawlSpider案例" class="headerlink" title="微信小程序社区CrawlSpider案例"></a>微信小程序社区CrawlSpider案例</h3><h4 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h4><p>在文件夹内创建项目</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">scrapy startproject wxapp</span><br><span class="line">cd wxapp</span><br><span class="line"># 使用 crawl 作为模板创建爬虫</span><br><span class="line">scrapy genspider -t crawl wxapp_spider &quot;wxapp-union.com&quot;</span><br></pre></td></tr></table></figure>
+
+<h4 id="CrawlSpider："><a href="#CrawlSpider：" class="headerlink" title="CrawlSpider："></a>CrawlSpider：</h4><p>需要使用<code>LinkExtractor</code>和<code>Rule</code>。这两个东西决定爬虫的具体走向。</p>
+<ol>
+<li>allow设置规则的方法：要能够限制在我们想要的url上面，不要跟其他的url产生相同的正则表达式即可。</li>
+<li>什么情况下使用follow：如果在爬取页面的时候需要将满足当前条件的url再进行跟进，那么就设置为True,否则设置为False。</li>
+<li>什么情况下该指定callback：如果这个url对应的页面，只是为了获取更多的url，并不需要里面的数据，那么可以不指定callback。如果想要获取url对应页面中的数据，那么就需要指定一个callback。</li>
+</ol>
+<p><strong>Wxapp_spider.py</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line">import scrapy</span><br><span class="line">from scrapy.linkextractors import LinkExtractor</span><br><span class="line">from scrapy.spiders import CrawlSpider, Rule</span><br><span class="line">from wxapp.items import WxappItem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class WxappSpiderSpider(CrawlSpider):</span><br><span class="line">    name &#x3D; &#39;wxapp_spider&#39;</span><br><span class="line">    allowed_domains &#x3D; [&#39;wxapp-union.com&#39;]</span><br><span class="line">    start_urls &#x3D; [&#39;http:&#x2F;&#x2F;www.wxapp-union.com&#x2F;portal.php?mod&#x3D;list&amp;catid&#x3D;2&amp;page&#x3D;1&#39;]</span><br><span class="line"></span><br><span class="line">    rules &#x3D; (</span><br><span class="line">        Rule(LinkExtractor(allow&#x3D;r&#39;.+mod&#x3D;list&amp;catid&#x3D;2&amp;page&#x3D;\d&#39;), follow&#x3D;True),</span><br><span class="line">        Rule(LinkExtractor(allow&#x3D;r&quot;.+article-.+\.html&quot;), callback&#x3D;&quot;parse_detail&quot;, follow&#x3D;False)</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    def parse_detail(self, response):</span><br><span class="line">        title &#x3D; response.xpath(&quot;&#x2F;&#x2F;h1[@class&#x3D;&#39;ph&#39;]&#x2F;text()&quot;).get()</span><br><span class="line">        author_p &#x3D; response.xpath(&quot;&#x2F;&#x2F;p[@class&#x3D;&#39;authors&#39;]&quot;)</span><br><span class="line">        author &#x3D; author_p.xpath(&quot;.&#x2F;&#x2F;a&#x2F;text()&quot;).get()</span><br><span class="line">        pub_time &#x3D; author_p.xpath(&quot;.&#x2F;&#x2F;span&#x2F;text()&quot;).get()</span><br><span class="line">        article_content &#x3D; response.xpath(&quot;&#x2F;&#x2F;td[@id&#x3D;&#39;article_content&#39;]&#x2F;&#x2F;text()&quot;).getall()</span><br><span class="line">        content &#x3D; &quot;&quot;.join(article_content).strip()</span><br><span class="line">        item &#x3D; WxappItem(title&#x3D;title, author&#x3D;author, pub_time&#x3D;pub_time, content&#x3D;content)</span><br><span class="line">        yield item</span><br></pre></td></tr></table></figure>
+
+<p><strong>items.py</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import scrapy</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class WxappItem(scrapy.Item):</span><br><span class="line">    # define the fields for your item here like:</span><br><span class="line">    title &#x3D; scrapy.Field()</span><br><span class="line">    author &#x3D; scrapy.Field()</span><br><span class="line">    pub_time &#x3D; scrapy.Field()</span><br><span class="line">    content &#x3D; scrapy.Field()</span><br></pre></td></tr></table></figure>
+
+<p><strong>settings.py</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line"># Scrapy settings for wxapp project</span><br><span class="line">#</span><br><span class="line"># For simplicity, this file contains only settings considered important or</span><br><span class="line"># commonly used. You can find more settings consulting the documentation:</span><br><span class="line">#</span><br><span class="line">#     https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;settings.html</span><br><span class="line">#     https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;downloader-middleware.html</span><br><span class="line">#     https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;spider-middleware.html</span><br><span class="line"></span><br><span class="line">BOT_NAME &#x3D; &#39;wxapp&#39;</span><br><span class="line"></span><br><span class="line">SPIDER_MODULES &#x3D; [&#39;wxapp.spiders&#39;]</span><br><span class="line">NEWSPIDER_MODULE &#x3D; &#39;wxapp.spiders&#39;</span><br><span class="line"></span><br><span class="line"># Crawl responsibly by identifying yourself (and your website) on the user-agent</span><br><span class="line"># USER_AGENT &#x3D; &#39;wxapp (+http:&#x2F;&#x2F;www.yourdomain.com)&#39;</span><br><span class="line"></span><br><span class="line"># Obey robots.txt rules</span><br><span class="line">ROBOTSTXT_OBEY &#x3D; False</span><br><span class="line"></span><br><span class="line"># Configure maximum concurrent requests performed by Scrapy (default: 16)</span><br><span class="line"># CONCURRENT_REQUESTS &#x3D; 32</span><br><span class="line"></span><br><span class="line"># Configure a delay for requests for the same website (default: 0)</span><br><span class="line"># See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;settings.html#download-delay</span><br><span class="line"># See also autothrottle settings and docs</span><br><span class="line">DOWNLOAD_DELAY &#x3D; 1</span><br><span class="line"># The download delay setting will honor only one of:</span><br><span class="line"># CONCURRENT_REQUESTS_PER_DOMAIN &#x3D; 16</span><br><span class="line"># CONCURRENT_REQUESTS_PER_IP &#x3D; 16</span><br><span class="line"></span><br><span class="line"># Disable cookies (enabled by default)</span><br><span class="line"># COOKIES_ENABLED &#x3D; False</span><br><span class="line"></span><br><span class="line"># Disable Telnet Console (enabled by default)</span><br><span class="line"># TELNETCONSOLE_ENABLED &#x3D; False</span><br><span class="line"></span><br><span class="line"># Override the default request headers:</span><br><span class="line">DEFAULT_REQUEST_HEADERS &#x3D; &#123;</span><br><span class="line">    &#39;Accept&#39;: &#39;text&#x2F;html,application&#x2F;xhtml+xml,application&#x2F;xml;q&#x3D;0.9,*&#x2F;*;q&#x3D;0.8&#39;,</span><br><span class="line">    &#39;Accept-Language&#39;: &#39;en&#39;,</span><br><span class="line">    &#39;User-Agent&#39;: &#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;73.0.3683.86 Safari&#x2F;537.36&#39;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># Enable or disable spider middlewares</span><br><span class="line"># See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;spider-middleware.html</span><br><span class="line"># SPIDER_MIDDLEWARES &#x3D; &#123;</span><br><span class="line">#    &#39;wxapp.middlewares.WxappSpiderMiddleware&#39;: 543,</span><br><span class="line"># &#125;</span><br><span class="line"></span><br><span class="line"># Enable or disable downloader middlewares</span><br><span class="line"># See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;downloader-middleware.html</span><br><span class="line"># DOWNLOADER_MIDDLEWARES &#x3D; &#123;</span><br><span class="line">#    &#39;wxapp.middlewares.WxappDownloaderMiddleware&#39;: 543,</span><br><span class="line"># &#125;</span><br><span class="line"></span><br><span class="line"># Enable or disable extensions</span><br><span class="line"># See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;extensions.html</span><br><span class="line"># EXTENSIONS &#x3D; &#123;</span><br><span class="line">#    &#39;scrapy.extensions.telnet.TelnetConsole&#39;: None,</span><br><span class="line"># &#125;</span><br><span class="line"></span><br><span class="line"># Configure item pipelines</span><br><span class="line"># See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;item-pipeline.html</span><br><span class="line">ITEM_PIPELINES &#x3D; &#123;</span><br><span class="line">   &#39;wxapp.pipelines.WxappPipeline&#39;: 300,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># Enable and configure the AutoThrottle extension (disabled by default)</span><br><span class="line"># See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;autothrottle.html</span><br><span class="line"># AUTOTHROTTLE_ENABLED &#x3D; True</span><br><span class="line"># The initial download delay</span><br><span class="line"># AUTOTHROTTLE_START_DELAY &#x3D; 5</span><br><span class="line"># The maximum download delay to be set in case of high latencies</span><br><span class="line"># AUTOTHROTTLE_MAX_DELAY &#x3D; 60</span><br><span class="line"># The average number of requests Scrapy should be sending in parallel to</span><br><span class="line"># each remote server</span><br><span class="line"># AUTOTHROTTLE_TARGET_CONCURRENCY &#x3D; 1.0</span><br><span class="line"># Enable showing throttling stats for every response received:</span><br><span class="line"># AUTOTHROTTLE_DEBUG &#x3D; False</span><br><span class="line"></span><br><span class="line"># Enable and configure HTTP caching (disabled by default)</span><br><span class="line"># See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;downloader-middleware.html#httpcache-middleware-settings</span><br><span class="line"># HTTPCACHE_ENABLED &#x3D; True</span><br><span class="line"># HTTPCACHE_EXPIRATION_SECS &#x3D; 0</span><br><span class="line"># HTTPCACHE_DIR &#x3D; &#39;httpcache&#39;</span><br><span class="line"># HTTPCACHE_IGNORE_HTTP_CODES &#x3D; []</span><br><span class="line"># HTTPCACHE_STORAGE &#x3D; &#39;scrapy.extensions.httpcache.FilesystemCacheStorage&#39;</span><br></pre></td></tr></table></figure>
+
+<p><strong>pipelines.py</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">from scrapy.exporters import JsonLinesItemExporter</span><br><span class="line"></span><br><span class="line">class WxappPipeline(object):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        self.fp &#x3D; open(&#39;wxjc.json&#39;,&#39;wb&#39;)</span><br><span class="line">        self.exporter &#x3D; JsonLinesItemExporter(self.fp,ensure_ascii&#x3D;False,encoding&#x3D;&#39;utf-8&#39;)</span><br><span class="line"></span><br><span class="line">    def process_item(self, item, spider):</span><br><span class="line">        self.exporter.export_item(item)</span><br><span class="line">        return item</span><br><span class="line"></span><br><span class="line">    def close_spider(self,spider):</span><br><span class="line">        self.fp.close()</span><br></pre></td></tr></table></figure>
+
+<p><strong>Start.py</strong>：启动项目</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from scrapy import cmdline</span><br><span class="line"></span><br><span class="line">cmdline.execute(&quot;scrapy crawl wxapp_spider&quot;.split())</span><br></pre></td></tr></table></figure>
+
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-3-%E2%80%94%E2%80%94CrawlSpider/" data-id="ck6m69dvg005w68vv970ee4mo"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" rel="tag">网络爬虫</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-4-%E2%80%94%E2%80%94Scrapy-Shell/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            五、Scrapy框架(4)——Scrapy Shell
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-2-%E2%80%94%E2%80%94%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">五、Scrapy框架(2)——快速入门</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

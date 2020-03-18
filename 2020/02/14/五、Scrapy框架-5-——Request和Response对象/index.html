@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    五、Scrapy框架(5)——Request和Response对象 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-五、Scrapy框架-5-——Request和Response对象" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  五、Scrapy框架(5)——Request和Response对象
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-5-%E2%80%94%E2%80%94Request%E5%92%8CResponse%E5%AF%B9%E8%B1%A1/" class="article-date">
+  <time datetime="2020-02-14T12:35:46.000Z" itemprop="datePublished">2020-02-14</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/">网络爬虫</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.5k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">7分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="Request和Response对象"><a href="#Request和Response对象" class="headerlink" title="Request和Response对象"></a>Request和Response对象</h2><a id="more"></a>
+
+<h3 id="Request对象"><a href="#Request对象" class="headerlink" title="Request对象"></a>Request对象</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"> 1 class Request(object_ref):</span><br><span class="line"> 2 </span><br><span class="line"> 3     def __init__(self, url, callback&#x3D;None, method&#x3D;&#39;GET&#39;, headers&#x3D;None, body&#x3D;None,</span><br><span class="line"> 4                  cookies&#x3D;None, meta&#x3D;None, encoding&#x3D;&#39;utf-8&#39;, priority&#x3D;0,</span><br><span class="line"> 5                  dont_filter&#x3D;False, errback&#x3D;None, flags&#x3D;None):</span><br><span class="line"> 6 </span><br><span class="line"> 7         self._encoding &#x3D; encoding  # this one has to be set first</span><br><span class="line"> 8         self.method &#x3D; str(method).upper()</span><br><span class="line"> 9         self._set_url(url)</span><br><span class="line">10         self._set_body(body)</span><br><span class="line">11         assert isinstance(priority, int), &quot;Request priority not an integer: %r&quot; % priority</span><br><span class="line">12         self.priority &#x3D; priority</span><br><span class="line">13 </span><br><span class="line">14         if callback is not None and not callable(callback):</span><br><span class="line">15             raise TypeError(&#39;callback must be a callable, got %s&#39; % type(callback).__name__)</span><br><span class="line">16         if errback is not None and not callable(errback):</span><br><span class="line">17             raise TypeError(&#39;errback must be a callable, got %s&#39; % type(errback).__name__)</span><br><span class="line">18         assert callback or not errback, &quot;Cannot use errback without a callback&quot;</span><br><span class="line">19         self.callback &#x3D; callback</span><br><span class="line">20         self.errback &#x3D; errback</span><br><span class="line">21 </span><br><span class="line">22         self.cookies &#x3D; cookies or &#123;&#125;</span><br><span class="line">23         self.headers &#x3D; Headers(headers or &#123;&#125;, encoding&#x3D;encoding)</span><br><span class="line">24         self.dont_filter &#x3D; dont_filter</span><br><span class="line">25 </span><br><span class="line">26         self._meta &#x3D; dict(meta) if meta else None</span><br><span class="line">27         self.flags &#x3D; [] if flags is None else list(flags)</span><br></pre></td></tr></table></figure>
+
+<p>Request对象在我们写爬虫，爬取一面的数据需要重新发送一个请求的时候调用。这个类需要传递一些参数，其中比较常用的参数有：</p>
+<ol>
+<li>url：这个request对象发送请求的url。</li>
+<li>callback：在下载器下载完相应的数据后执行的回调函数。</li>
+<li>method：请求的方法。默认为<code>GET</code>方法，可以设置为其他方法。</li>
+<li>headers：请求头，对于一些固定的设置，放在<code>settings.py</code>中指定就可以了。对于那些非固定的，可以在发送请求的时候指定。</li>
+<li>meta：比较常用。用于在不同的请求之间传递数据用的。</li>
+<li>encoding：编码。默认的为<code>utf-8</code>，使用默认的就可以了。</li>
+<li>dont_filter：表示不由调度器过滤。在执行多次重复的请求的时候用得比较多。</li>
+<li>errback：在发生错误的时候执行的函数。</li>
+</ol>
+<h3 id="Response对象"><a href="#Response对象" class="headerlink" title="Response对象"></a>Response对象</h3><p>Response对象一般是由<code>scrapy</code>给你自动构建的。因此开发者不需要关心如何创建<code>Response</code>对象，而是如何使用它。<code>Response</code>对象有很多属性，可以用来提取数据的。主要有以下属性：</p>
+<ol>
+<li>meta：从其他请求传过来的<code>meta</code>属性，可以用来保持多个请求之间的数据连接。</li>
+<li>encoding：返回当前字符串编码和解码的格式。</li>
+<li>text：将返回来的数据作为<code>unicode</code>字符串返回。</li>
+<li>body：将返回的数据作为<code>bytes</code>字符串返回。</li>
+<li>xpath：xpath选择器。</li>
+<li>css：css选择器。</li>
+</ol>
+<h3 id="发送POST请求"><a href="#发送POST请求" class="headerlink" title="发送POST请求"></a>发送POST请求</h3><p>有时候我们想要在请求数据的时候发送post请求，那么这时候需要使用 <code>Request</code>的子类和<code>FormRequest</code> 来实现。如果想要在爬虫一开始的时候就发送 <code>POST</code> 请求，那么需要在爬虫类中重写 <code>start_requests(self)</code> 方法，并且不再调用 <code>start_urls</code> 里的url。</p>
+<h3 id="模拟登录"><a href="#模拟登录" class="headerlink" title="模拟登录"></a>模拟登录</h3><h4 id="案例一：模拟登录人人网"><a href="#案例一：模拟登录人人网" class="headerlink" title="案例一：模拟登录人人网"></a>案例一：模拟登录人人网</h4><ol>
+<li>想要发送post请求，那么推荐使用<code>scrapy.FormRequest</code>方法。可以方便的指定表单数据。</li>
+<li>如果想在爬虫一开始的时候就发送post请求，那么应该重写<code>start_requests</code>方法。在这个方法中，发送post请求。</li>
+</ol>
+<p>renren.py</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line">import scrapy</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class RenrenSpider(scrapy.Spider):</span><br><span class="line">    name &#x3D; &#39;renren&#39;</span><br><span class="line">    allowed_domains &#x3D; [&#39;renren.com&#39;]</span><br><span class="line">    start_urls &#x3D; [&#39;http:&#x2F;&#x2F;renren.com&#x2F;&#39;]</span><br><span class="line"></span><br><span class="line">    def start_requests(self):</span><br><span class="line">        url &#x3D; &#39;http:&#x2F;&#x2F;www.renren.com&#x2F;PLogin.do&#39;</span><br><span class="line">        data &#x3D; &#123;&quot;email&quot;: &quot;renjy185911222@126.com&quot;, &#39;password&#39;: &#39;caonima001&#39;&#125;</span><br><span class="line">        request &#x3D; scrapy.FormRequest(url, formdata&#x3D;data, callback&#x3D;self.parse_page)</span><br><span class="line">        yield request</span><br><span class="line"></span><br><span class="line">    def parse_page(self, response):</span><br><span class="line">        request &#x3D; scrapy.Request(url&#x3D;&#39;http:&#x2F;&#x2F;www.renren.com&#x2F;880151247&#x2F;profile&#39;,callback&#x3D;self.parse_profile)</span><br><span class="line">        yield request</span><br><span class="line"></span><br><span class="line">    def parse_profile(self,response):</span><br><span class="line">        with open(&#39;dp.html&#39;,&#39;w&#39;,encoding&#x3D;&#39;utf-8&#39;) as fp:</span><br><span class="line">            fp.write(response.text)</span><br></pre></td></tr></table></figure>
+
+<p>settings.py</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"> 1 # -*- coding: utf-8 -*-</span><br><span class="line"> 2 </span><br><span class="line"> 3 # Scrapy settings for renren_login project</span><br><span class="line"> 4 #</span><br><span class="line"> 5 # For simplicity, this file contains only settings considered important or</span><br><span class="line"> 6 # commonly used. You can find more settings consulting the documentation:</span><br><span class="line"> 7 #</span><br><span class="line"> 8 #     https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;settings.html</span><br><span class="line"> 9 #     https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;downloader-middleware.html</span><br><span class="line">10 #     https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;spider-middleware.html</span><br><span class="line">11 </span><br><span class="line">12 BOT_NAME &#x3D; &#39;renren_login&#39;</span><br><span class="line">13 </span><br><span class="line">14 SPIDER_MODULES &#x3D; [&#39;renren_login.spiders&#39;]</span><br><span class="line">15 NEWSPIDER_MODULE &#x3D; &#39;renren_login.spiders&#39;</span><br><span class="line">16 </span><br><span class="line">17 # Crawl responsibly by identifying yourself (and your website) on the user-agent</span><br><span class="line">18 # USER_AGENT &#x3D; &#39;renren_login (+http:&#x2F;&#x2F;www.yourdomain.com)&#39;</span><br><span class="line">19 </span><br><span class="line">20 # Obey robots.txt rules</span><br><span class="line">21 ROBOTSTXT_OBEY &#x3D; False</span><br><span class="line">22 </span><br><span class="line">23 # Configure maximum concurrent requests performed by Scrapy (default: 16)</span><br><span class="line">24 # CONCURRENT_REQUESTS &#x3D; 32</span><br><span class="line">25 </span><br><span class="line">26 # Configure a delay for requests for the same website (default: 0)</span><br><span class="line">27 # See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;settings.html#download-delay</span><br><span class="line">28 # See also autothrottle settings and docs</span><br><span class="line">29 # DOWNLOAD_DELAY &#x3D; 3</span><br><span class="line">30 # The download delay setting will honor only one of:</span><br><span class="line">31 # CONCURRENT_REQUESTS_PER_DOMAIN &#x3D; 16</span><br><span class="line">32 # CONCURRENT_REQUESTS_PER_IP &#x3D; 16</span><br><span class="line">33 </span><br><span class="line">34 # Disable cookies (enabled by default)</span><br><span class="line">35 # COOKIES_ENABLED &#x3D; False</span><br><span class="line">36 </span><br><span class="line">37 # Disable Telnet Console (enabled by default)</span><br><span class="line">38 # TELNETCONSOLE_ENABLED &#x3D; False</span><br><span class="line">39 </span><br><span class="line">40 # Override the default request headers:</span><br><span class="line">41 DEFAULT_REQUEST_HEADERS &#x3D; &#123;</span><br><span class="line">42     &#39;Accept&#39;: &#39;text&#x2F;html,application&#x2F;xhtml+xml,application&#x2F;xml;q&#x3D;0.9,*&#x2F;*;q&#x3D;0.8&#39;,</span><br><span class="line">43     &#39;Accept-Language&#39;: &#39;en&#39;,</span><br><span class="line">44     &#39;User-Agent&#39;: &#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;73.0.3683.86 Safari&#x2F;537.36&#39;</span><br><span class="line">45 &#125;</span><br><span class="line">46 </span><br><span class="line">47 # Enable or disable spider middlewares</span><br><span class="line">48 # See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;spider-middleware.html</span><br><span class="line">49 # SPIDER_MIDDLEWARES &#x3D; &#123;</span><br><span class="line">50 #    &#39;renren_login.middlewares.RenrenLoginSpiderMiddleware&#39;: 543,</span><br><span class="line">51 # &#125;</span><br><span class="line">52 </span><br><span class="line">53 # Enable or disable downloader middlewares</span><br><span class="line">54 # See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;downloader-middleware.html</span><br><span class="line">55 # DOWNLOADER_MIDDLEWARES &#x3D; &#123;</span><br><span class="line">56 #    &#39;renren_login.middlewares.RenrenLoginDownloaderMiddleware&#39;: 543,</span><br><span class="line">57 # &#125;</span><br><span class="line">58 </span><br><span class="line">59 # Enable or disable extensions</span><br><span class="line">60 # See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;extensions.html</span><br><span class="line">61 # EXTENSIONS &#x3D; &#123;</span><br><span class="line">62 #    &#39;scrapy.extensions.telnet.TelnetConsole&#39;: None,</span><br><span class="line">63 # &#125;</span><br><span class="line">64 </span><br><span class="line">65 # Configure item pipelines</span><br><span class="line">66 # See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;item-pipeline.html</span><br><span class="line">67 # ITEM_PIPELINES &#x3D; &#123;</span><br><span class="line">68 #    &#39;renren_login.pipelines.RenrenLoginPipeline&#39;: 300,</span><br><span class="line">69 # &#125;</span><br><span class="line">70 </span><br><span class="line">71 # Enable and configure the AutoThrottle extension (disabled by default)</span><br><span class="line">72 # See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;autothrottle.html</span><br><span class="line">73 # AUTOTHROTTLE_ENABLED &#x3D; True</span><br><span class="line">74 # The initial download delay</span><br><span class="line">75 # AUTOTHROTTLE_START_DELAY &#x3D; 5</span><br><span class="line">76 # The maximum download delay to be set in case of high latencies</span><br><span class="line">77 # AUTOTHROTTLE_MAX_DELAY &#x3D; 60</span><br><span class="line">78 # The average number of requests Scrapy should be sending in parallel to</span><br><span class="line">79 # each remote server</span><br><span class="line">80 # AUTOTHROTTLE_TARGET_CONCURRENCY &#x3D; 1.0</span><br><span class="line">81 # Enable showing throttling stats for every response received:</span><br><span class="line">82 # AUTOTHROTTLE_DEBUG &#x3D; False</span><br><span class="line">83 </span><br><span class="line">84 # Enable and configure HTTP caching (disabled by default)</span><br><span class="line">85 # See https:&#x2F;&#x2F;doc.scrapy.org&#x2F;en&#x2F;latest&#x2F;topics&#x2F;downloader-middleware.html#httpcache-middleware-settings</span><br><span class="line">86 # HTTPCACHE_ENABLED &#x3D; True</span><br><span class="line">87 # HTTPCACHE_EXPIRATION_SECS &#x3D; 0</span><br><span class="line">88 # HTTPCACHE_DIR &#x3D; &#39;httpcache&#39;</span><br><span class="line">89 # HTTPCACHE_IGNORE_HTTP_CODES &#x3D; []</span><br><span class="line">90 # HTTPCACHE_STORAGE &#x3D; &#39;scrapy.extensions.httpcache.FilesystemCacheStorage&#39;</span><br></pre></td></tr></table></figure>
+
+<p>Start.py</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from scrapy import cmdline</span><br><span class="line"></span><br><span class="line">cmdline.execute(&quot;scrapy crawl renren&quot;.split())</span><br></pre></td></tr></table></figure>
+
+<h4 id="案例二：模拟登录豆瓣网-识别验证码"><a href="#案例二：模拟登录豆瓣网-识别验证码" class="headerlink" title="案例二：模拟登录豆瓣网(识别验证码)"></a>案例二：模拟登录豆瓣网(识别验证码)</h4>
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-5-%E2%80%94%E2%80%94Request%E5%92%8CResponse%E5%AF%B9%E8%B1%A1/" data-id="ck6m69dvj006568vvhagv0a0i"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" rel="tag">网络爬虫</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-6-%E2%80%94%E2%80%94%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6%E5%92%8C%E5%9B%BE%E7%89%87/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            五、Scrapy框架(6)——下载文件和图片
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-4-%E2%80%94%E2%80%94Scrapy-Shell/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">五、Scrapy框架(4)——Scrapy Shell</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

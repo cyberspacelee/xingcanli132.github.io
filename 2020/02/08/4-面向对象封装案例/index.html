@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    4-面向对象封装案例 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-4-面向对象封装案例" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  4-面向对象封装案例
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/08/4-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B0%81%E8%A3%85%E6%A1%88%E4%BE%8B/" class="article-date">
+  <time datetime="2020-02-08T07:23:41.000Z" itemprop="datePublished">2020-02-08</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/">面向对象</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.1k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">4分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h1 id="面向对象封装案例"><a href="#面向对象封装案例" class="headerlink" title="面向对象封装案例"></a>面向对象封装案例</h1><h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
+<li>封装</li>
+<li>小明爱跑步</li>
+<li>存放家具</li>
+</ul>
+<a id="more"></a>
+<h3 id="01-封装"><a href="#01-封装" class="headerlink" title="01. 封装"></a>01. 封装</h3><ol>
+<li><strong>封装</strong> 是面向对象编程的一大特点</li>
+<li>面向对象编程的 <strong>第一步</strong> —— 将 <strong>属性</strong> 和 <strong>方法</strong> <strong>封装</strong> 到一个抽象的 <strong>类</strong> 中</li>
+<li><strong>外界</strong> 使用 <strong>类</strong> 创建 <strong>对象</strong>，然后 <strong>让对象调用方法</strong></li>
+<li><strong>对象方法的细节</strong> 都被 <strong>封装</strong> 在 <strong>类的内部</strong></li>
+</ol>
+<h2 id="02-小明爱跑步"><a href="#02-小明爱跑步" class="headerlink" title="02. 小明爱跑步"></a>02. 小明爱跑步</h2><p><strong>需求</strong></p>
+<ol>
+<li><strong>小明</strong> <strong>体重</strong> <code>75.0</code> 公斤</li>
+<li>小明每次 <strong>跑步</strong> 会减肥 <code>0.5</code> 公斤</li>
+<li>小明每次 <strong>吃东西</strong> 体重增加 <code>1</code> 公斤</li>
+</ol>
+<p><img src="/2020/02/08/4-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B0%81%E8%A3%85%E6%A1%88%E4%BE%8B/007_%E5%B0%8F%E6%98%8E%E7%88%B1%E8%B7%91%E6%AD%A5.png" alt="007_小明爱跑步">￼</p>
+<blockquote>
+<p>提示：在 <strong>对象的方法内部</strong>，是可以 <strong>直接访问对象的属性</strong> 的！</p>
+</blockquote>
+<ul>
+<li>代码实现：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span>:</span></span><br><span class="line">    <span class="string">"""人类"""</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name, weight)</span>:</span></span><br><span class="line"></span><br><span class="line">        self.name = name</span><br><span class="line">        self.weight = weight</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="string">"我的名字叫 %s 体重 %.2f 公斤"</span> % (self.name, self.weight)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""跑步"""</span></span><br><span class="line"></span><br><span class="line">        print(<span class="string">"%s 爱跑步，跑步锻炼身体"</span> % self.name)</span><br><span class="line">        self.weight -= <span class="number">0.5</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">eat</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""吃东西"""</span></span><br><span class="line"></span><br><span class="line">        print(<span class="string">"%s 是吃货，吃完这顿再减肥"</span> % self.name)</span><br><span class="line">        self.weight += <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">xiaoming = Person(<span class="string">"小明"</span>, <span class="number">75</span>)</span><br><span class="line"></span><br><span class="line">xiaoming.run()</span><br><span class="line">xiaoming.eat()</span><br><span class="line">xiaoming.eat()</span><br><span class="line"></span><br><span class="line">print(xiaoming)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-1-小明爱跑步扩展-——-小美也爱跑步"><a href="#2-1-小明爱跑步扩展-——-小美也爱跑步" class="headerlink" title="2.1 小明爱跑步扩展 —— 小美也爱跑步"></a>2.1 小明爱跑步扩展 —— 小美也爱跑步</h3><p><strong>需求</strong></p>
+<ol>
+<li><strong>小明</strong> 和 <strong>小美</strong> 都爱跑步</li>
+<li><strong>小明</strong> <strong>体重</strong> <code>75.0</code> 公斤</li>
+<li><strong>小美</strong> <strong>体重</strong> <code>45.0</code> 公斤</li>
+<li>每次 <strong>跑步</strong> 都会减少 <code>0.5</code> 公斤</li>
+<li>每次 <strong>吃东西</strong> 都会增加 <code>1</code> 公斤</li>
+</ol>
+<p><img src="/2020/02/08/4-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B0%81%E8%A3%85%E6%A1%88%E4%BE%8B/007_%E5%B0%8F%E6%98%8E%E7%88%B1%E8%B7%91%E6%AD%A5.png" alt="007_小明爱跑步">￼</p>
+<p><strong>提示</strong></p>
+<ol>
+<li>在 <strong>对象的方法内部</strong>，是可以 <strong>直接访问对象的属性</strong> 的</li>
+<li><strong>同一个类</strong> 创建的 <strong>多个对象</strong> 之间，<strong>属性</strong> 互不干扰！</li>
+</ol>
+<p><img src="/2020/02/08/4-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B0%81%E8%A3%85%E6%A1%88%E4%BE%8B/001_%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8.png" alt="001_植物大战僵尸">￼</p>
+<h2 id="03-摆放家具"><a href="#03-摆放家具" class="headerlink" title="03. 摆放家具"></a>03. 摆放家具</h2><p><strong>需求</strong></p>
+<ol>
+<li>房子(House)有户型、总面积和家具名称列表<ul>
+<li>新房子没有任何的家具</li>
+</ul>
+</li>
+<li>家具(HouseItem)有名字和占地面积，其中<ul>
+<li><strong>席梦思(bed)</strong> 占地 <code>4</code> 平米</li>
+<li><strong>衣柜(chest)</strong> 占地 <code>2</code> 平米</li>
+<li><strong>餐桌(table)</strong> 占地 <code>1.5</code> 平米</li>
+</ul>
+</li>
+<li>将以上三件 <strong>家具</strong> <strong>添加</strong> 到 <strong>房子</strong> 中</li>
+<li>打印房子时，要求输出：<strong>户型</strong>、<strong>总面积</strong>、<strong>剩余面积</strong>、<strong>家具名称列表</strong></li>
+</ol>
+<p><img src="/2020/02/08/4-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B0%81%E8%A3%85%E6%A1%88%E4%BE%8B/008_%E6%91%86%E6%94%BE%E5%AE%B6%E5%85%B7.png" alt="008_摆放家具">￼</p>
+<p><strong>剩余面积</strong></p>
+<ol>
+<li>在创建房子对象时，定义一个 <strong>剩余面积的属性</strong>，<strong>初始值和总面积相等</strong></li>
+<li>当调用 <code>add_item</code> 方法，向房间 <strong>添加家具</strong> 时，让 <strong>剩余面积</strong> -= <strong>家具面积</strong></li>
+</ol>
+<p><strong>思考</strong>：应该先开发哪一个类？</p>
+<p><strong>答案</strong> —— <strong>家具类</strong></p>
+<ol>
+<li>家具简单</li>
+<li>房子要使用到家具，<strong>被使用的类</strong>，通常应该先开发</li>
+</ol>
+<h3 id="3-1-创建家具"><a href="#3-1-创建家具" class="headerlink" title="3.1 创建家具"></a>3.1 创建家具</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HouseItem</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name, area)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param name: 家具名称</span></span><br><span class="line"><span class="string">        :param area: 占地面积</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        self.name = name</span><br><span class="line">        self.area = area</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">"[%s] 占地面积 %.2f"</span> % (self.name, self.area)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 创建家具</span></span><br><span class="line">bed = HouseItem(<span class="string">"席梦思"</span>, <span class="number">4</span>)</span><br><span class="line">chest = HouseItem(<span class="string">"衣柜"</span>, <span class="number">2</span>)</span><br><span class="line">table = HouseItem(<span class="string">"餐桌"</span>, <span class="number">1.5</span>)</span><br><span class="line"></span><br><span class="line">print(bed)</span><br><span class="line">print(chest)</span><br><span class="line">print(table)</span><br></pre></td></tr></table></figure>
+
+<p><strong>小结</strong></p>
+<ol>
+<li>创建了一个 <strong>家具类</strong>，使用到 <code>__init__</code> 和 <code>__str__</code> 两个内置方法</li>
+<li>使用 <strong>家具类</strong> 创建了 <strong>三个家具对象</strong>，并且 <strong>输出家具信息</strong></li>
+</ol>
+<h3 id="3-2-创建房间"><a href="#3-2-创建房间" class="headerlink" title="3.2 创建房间"></a>3.2 创建房间</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">House</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, house_type, area)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param house_type: 户型</span></span><br><span class="line"><span class="string">        :param area: 总面积</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        self.house_type = house_type</span><br><span class="line">        self.area = area</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 剩余面积默认和总面积一致</span></span><br><span class="line">        self.free_area = area</span><br><span class="line">        <span class="comment"># 默认没有任何的家具</span></span><br><span class="line">        self.item_list = []</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># Python 能够自动的将一对括号内部的代码连接在一起</span></span><br><span class="line">        <span class="keyword">return</span> (<span class="string">"户型：%s\n总面积：%.2f[剩余：%.2f]\n家具：%s"</span></span><br><span class="line">                % (self.house_type, self.area,</span><br><span class="line">                   self.free_area, self.item_list))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add_item</span><span class="params">(self, item)</span>:</span></span><br><span class="line"></span><br><span class="line">        print(<span class="string">"要添加 %s"</span> % item)</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 创建房子对象</span></span><br><span class="line">my_home = House(<span class="string">"两室一厅"</span>, <span class="number">60</span>)</span><br><span class="line"></span><br><span class="line">my_home.add_item(bed)</span><br><span class="line">my_home.add_item(chest)</span><br><span class="line">my_home.add_item(table)</span><br><span class="line"></span><br><span class="line">print(my_home)</span><br></pre></td></tr></table></figure>
+
+<p><strong>小结</strong></p>
+<ol>
+<li>创建了一个 <strong>房子类</strong>，使用到 <code>__init__</code> 和 <code>__str__</code> 两个内置方法</li>
+<li>准备了一个 <code>add_item</code> 方法 <strong>准备添加家具</strong></li>
+<li>使用 <strong>房子类</strong> 创建了 <strong>一个房子对象</strong></li>
+<li>让 <strong>房子对象</strong> 调用了三次 <code>add_item</code> 方法，将 <strong>三件家具</strong> 以实参传递到 <code>add_item</code> 内部</li>
+</ol>
+<h3 id="3-3-添加家具"><a href="#3-3-添加家具" class="headerlink" title="3.3 添加家具"></a>3.3 添加家具</h3><p><strong>需求</strong></p>
+<ul>
+<li>1&gt; <strong>判断</strong> <strong>家具的面积</strong> 是否 <strong>超过剩余面积</strong>，<strong>如果超过</strong>，提示不能添加这件家具</li>
+<li>2&gt; 将 <strong>家具的名称</strong> 追加到 <strong>家具名称列表</strong> 中</li>
+<li>3&gt; 用 <strong>房子的剩余面积</strong> - <strong>家具面积</strong></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_item</span><span class="params">(self, item)</span>:</span></span><br><span class="line"></span><br><span class="line">    print(<span class="string">"要添加 %s"</span> % item)</span><br><span class="line">    <span class="comment"># 1. 判断家具面积是否大于剩余面积</span></span><br><span class="line">    <span class="keyword">if</span> item.area &gt; self.free_area:</span><br><span class="line">        print(<span class="string">"%s 的面积太大，不能添加到房子中"</span> % item.name)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 2. 将家具的名称追加到名称列表中</span></span><br><span class="line">    self.item_list.append(item.name)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 3. 计算剩余面积</span></span><br><span class="line">    self.free_area -= item.area</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-小结"><a href="#3-4-小结" class="headerlink" title="3.4 小结"></a>3.4 小结</h3><ul>
+<li>主程序只负责创建 <strong>房子</strong> 对象和 <strong>家具</strong> 对象</li>
+<li>让 <strong>房子</strong> 对象调用 <code>add_item</code> 方法 <strong>将家具添加到房子</strong>中</li>
+<li><strong>面积计算</strong>、<strong>剩余面积</strong>、<strong>家具列表</strong> 等处理都被 <strong>封装</strong> 到 <strong>房子类的内部</strong></li>
+</ul>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/08/4-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B0%81%E8%A3%85%E6%A1%88%E4%BE%8B/" data-id="ck6m69dtx002w68vv4zhw0r49"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" rel="tag">面向对象</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/08/5-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B0%81%E8%A3%85%E6%A1%88%E4%BE%8BII/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            5-面向对象封装案例II
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/08/3-%E9%9D%A2%E7%9B%B8%E5%AF%B9%E8%B1%A1%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">3-面相对象基础语法</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

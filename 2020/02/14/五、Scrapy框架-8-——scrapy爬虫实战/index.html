@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    五、Scrapy框架(8)——scrapy爬虫实战 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-五、Scrapy框架-8-——scrapy爬虫实战" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  五、Scrapy框架(8)——scrapy爬虫实战
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-8-%E2%80%94%E2%80%94scrapy%E7%88%AC%E8%99%AB%E5%AE%9E%E6%88%98/" class="article-date">
+  <time datetime="2020-02-14T12:44:11.000Z" itemprop="datePublished">2020-02-14</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/">网络爬虫</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.6k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">9分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="小程序社区爬虫"><a href="#小程序社区爬虫" class="headerlink" title="小程序社区爬虫"></a>小程序社区爬虫</h2><a id="more"></a>
+<p>数据保存到json文件中。使用 CrawlSpider</p>
+<h2 id="模拟登录豆瓣网爬虫"><a href="#模拟登录豆瓣网爬虫" class="headerlink" title="模拟登录豆瓣网爬虫"></a>模拟登录豆瓣网爬虫</h2><p>发送 post 请求模拟登录</p>
+<h2 id="图片下载爬虫"><a href="#图片下载爬虫" class="headerlink" title="图片下载爬虫"></a>图片下载爬虫</h2><p>汽车之家宝马5系爬虫</p>
+<h2 id="BOSS直聘爬虫"><a href="#BOSS直聘爬虫" class="headerlink" title="BOSS直聘爬虫"></a>BOSS直聘爬虫</h2><p>BOSS直聘有很高的反爬虫机制，只要用同 个IP访问多个职位列表页，就会被封掉IP。采用代理ip的方式可解决问题。</p>
+<h2 id="简书网站整站爬虫"><a href="#简书网站整站爬虫" class="headerlink" title="简书网站整站爬虫"></a>简书网站整站爬虫</h2><p>数据保存到mysql数据库中</p>
+<p>将 selenium + chromedriver集成到scrapy</p>
+<h3 id="一、页面解析"><a href="#一、页面解析" class="headerlink" title="一、页面解析"></a>一、页面解析</h3><ol>
+<li>在终端中创建项目</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scrapy startproject jianshu_spider</span><br><span class="line">cd jianshu_spider</span><br><span class="line">scrapy genspider -t crawl js &quot;jianshu.com&quot;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>用Pycharm打开项目，修改<code>settings.py</code>配置，打开请求头</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ROBOTSTXT_OBEY &#x3D; False</span><br><span class="line"></span><br><span class="line">DEFAULT_REQUEST_HEADERS &#x3D; &#123;</span><br><span class="line">    &#39;Accept&#39;: &#39;text&#x2F;html,application&#x2F;xhtml+xml,application&#x2F;xml;q&#x3D;0.9,*&#x2F;*;q&#x3D;0.8&#39;,</span><br><span class="line">    &#39;Accept-Language&#39;: &#39;en&#39;,</span><br><span class="line">    &#39;User-Agent&#39;: &#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;73.0.3683.86 Safari&#x2F;537.36&#39;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>新建 <code>start.py</code>文件，用于启动项目</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">from scrapy import cmdline</span><br><span class="line">cmdline.execute(&quot;scrapy crawl js&quot;.split())</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分析网页，选择要爬虫的项目，在<code>items.py</code>创建ArticleItem类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import scrapy</span><br><span class="line"></span><br><span class="line">class ArticleItem(scrapy.Item):</span><br><span class="line">    title &#x3D; scrapy.Field()  # 标题</span><br><span class="line">    content &#x3D; scrapy.Field()    # 内容</span><br><span class="line">    article_id &#x3D; scrapy.Field() # 文章id</span><br><span class="line">    origin_url &#x3D; scrapy.Field() # 原始地址</span><br><span class="line">    author &#x3D; scrapy.Field() # 作者</span><br><span class="line">    avatar &#x3D; scrapy.Field() # 头像</span><br><span class="line">    pub_time &#x3D; scrapy.Field()   # 发布时间</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>开始写爬虫<code>js.py</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line">import scrapy</span><br><span class="line">from scrapy.linkextractors import LinkExtractor</span><br><span class="line">from scrapy.spiders import CrawlSpider, Rule</span><br><span class="line">from jianshu_spider.items import ArticleItem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class JsSpider(CrawlSpider):</span><br><span class="line">    name &#x3D; &#39;js&#39;</span><br><span class="line">    allowed_domains &#x3D; [&#39;jianshu.com&#39;]</span><br><span class="line">    start_urls &#x3D; [&#39;https:&#x2F;&#x2F;www.jianshu.com&#x2F;&#39;]</span><br><span class="line"></span><br><span class="line">    rules &#x3D; (</span><br><span class="line">        Rule(LinkExtractor(allow&#x3D;r&#39;.*&#x2F;p&#x2F;[0-9a-z]&#123;12&#125;&#39;), callback&#x3D;&#39;parse_detail&#39;, follow&#x3D;True),</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    def parse_detail(self, response):</span><br><span class="line">        title &#x3D; response.xpath(&quot;&#x2F;&#x2F;h1[@class&#x3D;&#39;title&#39;]&#x2F;text()&quot;).get()</span><br><span class="line">        avatar &#x3D; response.xpath(&quot;&#x2F;&#x2F;a[@class&#x3D;&#39;avatar&#39;]&#x2F;img&#x2F;@src&quot;).get()</span><br><span class="line">        author &#x3D; response.xpath(&quot;&#x2F;&#x2F;span[@class&#x3D;&#39;name&#39;]&#x2F;a&#x2F;&#x2F;text()&quot;).get()</span><br><span class="line">        pub_time &#x3D; response.xpath(&quot;&#x2F;&#x2F;span[@class&#x3D;&#39;publish-time&#39;]&#x2F;&#x2F;text()&quot;).get()</span><br><span class="line"></span><br><span class="line">        # https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;66aeb8473df1?&#x2F;u&#x2F;052e3bd4d2bc?utm_campaign&#x3D;maleskine&amp;utm_content&#x3D;user&amp;utm_medium&#x3D;seo_notes&amp;utm_source&#x3D;recommendation</span><br><span class="line">        url &#x3D; response.url</span><br><span class="line">        url1 &#x3D; url.split(&quot;?&quot;)[0]</span><br><span class="line">        article_id &#x3D; url1.split(&#39;&#x2F;&#39;)[-1]</span><br><span class="line">        content &#x3D; response.xpath(&quot;&#x2F;&#x2F;div[@class&#x3D;&#39;show-content&#39;]&quot;).get()</span><br><span class="line"></span><br><span class="line">        item &#x3D; ArticleItem(</span><br><span class="line">            title&#x3D;title,</span><br><span class="line">            avatar&#x3D;avatar,</span><br><span class="line">            author&#x3D;author,</span><br><span class="line">            pub_time&#x3D;pub_time,</span><br><span class="line">            article_id&#x3D;article_id,</span><br><span class="line">            origin_url&#x3D;response.url,</span><br><span class="line">            content&#x3D;content</span><br><span class="line">        )</span><br><span class="line">        yield item</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="二、数据保存到Mysql数据库"><a href="#二、数据保存到Mysql数据库" class="headerlink" title="二、数据保存到Mysql数据库"></a>二、数据保存到Mysql数据库</h3><ol>
+<li><p>在<code>settings.py</code>中打开 <code>ITEM_PIPELINES</code>设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ITEM_PIPELINES &#x3D; &#123;</span><br><span class="line">   &#39;jianshu_spider.pipelines.JianshuSpiderPipeline&#39;: 300,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 下载延迟3秒钟</span><br><span class="line">DOWNLOAD_DELAY &#x3D; 3</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在mysql中创建 jianshu数据库，新建 article表</p>
+</li>
+<li><p>编写<code>pipelines.py</code>，连接数据库</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">import pymysql</span><br><span class="line">from pymysql import cursors</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class JianshuSpiderPipeline(object):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        dbparams &#x3D; &#123;</span><br><span class="line">            &#39;host&#39;: &#39;127.0.0.1&#39;,</span><br><span class="line">            &#39;port&#39;: 3306,</span><br><span class="line">            &#39;user&#39;: &#39;root&#39;,</span><br><span class="line">            &#39;password&#39;: &#39;root&#39;,</span><br><span class="line">            &#39;database&#39;: &#39;jianshu&#39;,</span><br><span class="line">            &#39;charset&#39;: &#39;utf8&#39;</span><br><span class="line">        &#125;</span><br><span class="line">        self.conn &#x3D; pymysql.connect(**dbparams)</span><br><span class="line">        self.cursor &#x3D; self.conn.cursor()</span><br><span class="line">        self._sql &#x3D; None</span><br><span class="line"></span><br><span class="line">    def process_item(self, item, spider):</span><br><span class="line">        self.cursor.execute(self.sql, (</span><br><span class="line">            item[&#39;title&#39;], item[&#39;content&#39;], item[&#39;author&#39;], item[&#39;avatar&#39;], item[&#39;pub_time&#39;], item[&#39;origin_url&#39;],</span><br><span class="line">            item[&#39;article_id&#39;]))</span><br><span class="line">        self.conn.commit()</span><br><span class="line">        return item</span><br><span class="line"></span><br><span class="line">    @property</span><br><span class="line">    def sql(self):</span><br><span class="line">        if not self._sql:</span><br><span class="line">            self._sql &#x3D; &quot;&quot;&quot;</span><br><span class="line">            insert into article(title,content,author,avatar,pub_time,origin_url,article_id) values(%s,%s,%s,%s,%s,%s,%s)</span><br><span class="line">            &quot;&quot;&quot;</span><br><span class="line">            return self._sql</span><br><span class="line">        return self._sql</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>改成异常处理,<code>pipelines.py</code></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">import pymysql</span><br><span class="line">from twisted.enterprise import adbapi</span><br><span class="line">from pymysql import cursors</span><br><span class="line"></span><br><span class="line">class JianshuTwistedPipeline(object):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        dbparams &#x3D; &#123;</span><br><span class="line">            &#39;host&#39;: &#39;127.0.0.1&#39;,</span><br><span class="line">            &#39;port&#39;: 3306,</span><br><span class="line">            &#39;user&#39;: &#39;root&#39;,</span><br><span class="line">            &#39;password&#39;: &#39;root&#39;,</span><br><span class="line">            &#39;database&#39;: &#39;jianshu&#39;,</span><br><span class="line">            &#39;charset&#39;: &#39;utf8&#39;,</span><br><span class="line">            &#39;cursorclass&#39;: cursors.DictCursor</span><br><span class="line">        &#125;</span><br><span class="line">        self.dbpool &#x3D; adbapi.ConnectionPool(&#39;pymysql&#39;, **dbparams)</span><br><span class="line">        self._sql &#x3D; None</span><br><span class="line"></span><br><span class="line">    @property</span><br><span class="line">    def sql(self):</span><br><span class="line">        if not self._sql:</span><br><span class="line">            self._sql &#x3D; &quot;&quot;&quot;</span><br><span class="line">                insert into article(title,content,author,avatar,pub_time,origin_url,article_id) values(%s,%s,%s,%s,%s,%s,%s)</span><br><span class="line">                &quot;&quot;&quot;</span><br><span class="line">            return self._sql</span><br><span class="line">        return self._sql</span><br><span class="line"></span><br><span class="line">    def process_item(self, item, spider):</span><br><span class="line">        defer &#x3D; self.dbpool.runInteraction(self.insert_item, item)</span><br><span class="line">        defer.addErrback(self.handle_error,item,spider)</span><br><span class="line"></span><br><span class="line">    def insert_item(self, cursor, item):</span><br><span class="line">        cursor.execute(self.sql,(</span><br><span class="line">            item[&#39;title&#39;], item[&#39;content&#39;], item[&#39;author&#39;], item[&#39;avatar&#39;], item[&#39;pub_time&#39;], item[&#39;origin_url&#39;],</span><br><span class="line">            item[&#39;article_id&#39;]))</span><br><span class="line"></span><br><span class="line">    def handle_error(self, error, item, spider):</span><br><span class="line">        print(&#39;&#x3D;&#39;*10+&quot;error&quot;+&#39;&#x3D;&#39;*10)</span><br><span class="line">        print(error)</span><br><span class="line">        print(&#39;&#x3D;&#39;*10+&quot;error&quot;+&#39;&#x3D;&#39;*10)</span><br></pre></td></tr></table></figure>
+
+<p>把<code>settings.py</code>中的ITEM_PIPELINES改一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ITEM_PIPELINES &#x3D; &#123;</span><br><span class="line">   # &#39;jianshu_spider.pipelines.JianshuSpiderPipeline&#39;: 300,</span><br><span class="line">   &#39;jianshu_spider.pipelines.JianshuTwistedPipeline&#39;: 300,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="三、爬取ajax数据"><a href="#三、爬取ajax数据" class="headerlink" title="三、爬取ajax数据"></a>三、爬取ajax数据</h3><p>将 selenium + chromedriver集成到scrapy</p>
+<ol>
+<li><p>在数据库加入阅读、喜欢、字数、专题、评论数 字段</p>
+</li>
+<li><p>在<code>items.py</code>中添加字段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">import scrapy</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class ArticleItem(scrapy.Item):</span><br><span class="line">    title &#x3D; scrapy.Field()  # 标题</span><br><span class="line">    content &#x3D; scrapy.Field() # 内容</span><br><span class="line">    article_id &#x3D; scrapy.Field() # 文章id</span><br><span class="line">    origin_url &#x3D; scrapy.Field() # 原始地址</span><br><span class="line">    author &#x3D; scrapy.Field() # 作者</span><br><span class="line">    avatar &#x3D; scrapy.Field() # 头像</span><br><span class="line">    pub_time &#x3D; scrapy.Field()   # 发布时间</span><br><span class="line">    read_count &#x3D; scrapy.Field() # 阅读量</span><br><span class="line">    like_count &#x3D; scrapy.Field() # 喜欢</span><br><span class="line">    word_count &#x3D; scrapy.Field() # 字数</span><br><span class="line">    comment_count &#x3D; scrapy.Field() # 评论数</span><br><span class="line">    subjects &#x3D; scrapy.Field()   # 专题</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写 <code>middlewares.py</code></p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">from scrapy.http import HtmlResponse</span><br><span class="line">from selenium import webdriver</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class SeleniumDownloadMiddleware(object):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        self.driver &#x3D; webdriver.Chrome(executable_path&#x3D;&quot;&#x2F;Users&#x2F;ren&#x2F;Applications&#x2F;chromedriver&quot;)</span><br><span class="line"></span><br><span class="line">    def process_request(self, request, spider):</span><br><span class="line">        self.driver.get(request.url)</span><br><span class="line">        time.sleep(1)</span><br><span class="line">        try:</span><br><span class="line">            while True :</span><br><span class="line">                showMore &#x3D; self.driver.find_elements_by_class_name(&#39;show-more&#39;)</span><br><span class="line">                showMore.click()</span><br><span class="line">                time.sleep(0.3)</span><br><span class="line">                if not showMore:</span><br><span class="line">                    break</span><br><span class="line">        except:</span><br><span class="line">            pass</span><br><span class="line">        source &#x3D; self.driver.page_source</span><br><span class="line">        response &#x3D; HtmlResponse(url&#x3D;self.driver.current_url, body&#x3D;source, request&#x3D;request)</span><br><span class="line">        return response</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>优化 <code>js.py</code></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line">import scrapy</span><br><span class="line">from scrapy.linkextractors import LinkExtractor</span><br><span class="line">from scrapy.spiders import CrawlSpider, Rule</span><br><span class="line">from jianshu_spider.items import ArticleItem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class JsSpider(CrawlSpider):</span><br><span class="line">    name &#x3D; &#39;js&#39;</span><br><span class="line">    allowed_domains &#x3D; [&#39;jianshu.com&#39;]</span><br><span class="line">    start_urls &#x3D; [&#39;https:&#x2F;&#x2F;www.jianshu.com&#x2F;&#39;]</span><br><span class="line"></span><br><span class="line">    rules &#x3D; (</span><br><span class="line">        Rule(LinkExtractor(allow&#x3D;r&#39;.*&#x2F;p&#x2F;[0-9a-z]&#123;12&#125;&#39;), callback&#x3D;&#39;parse_detail&#39;, follow&#x3D;True),</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    def parse_detail(self, response):</span><br><span class="line">        title &#x3D; response.xpath(&quot;&#x2F;&#x2F;h1[@class&#x3D;&#39;title&#39;]&#x2F;text()&quot;).get()</span><br><span class="line">        avatar &#x3D; response.xpath(&quot;&#x2F;&#x2F;a[@class&#x3D;&#39;avatar&#39;]&#x2F;img&#x2F;@src&quot;).get()</span><br><span class="line">        author &#x3D; response.xpath(&quot;&#x2F;&#x2F;span[@class&#x3D;&#39;name&#39;]&#x2F;a&#x2F;&#x2F;text()&quot;).get()</span><br><span class="line">        pub_time &#x3D; response.xpath(&quot;&#x2F;&#x2F;span[@class&#x3D;&#39;publish-time&#39;]&#x2F;&#x2F;text()&quot;).get()</span><br><span class="line"></span><br><span class="line">        # https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;66aeb8473df1?&#x2F;u&#x2F;052e3bd4d2bc?utm_campaign&#x3D;maleskine&amp;utm_content&#x3D;user&amp;utm_medium&#x3D;seo_notes&amp;utm_source&#x3D;recommendation</span><br><span class="line">        url &#x3D; response.url</span><br><span class="line">        url1 &#x3D; url.split(&quot;?&quot;)[0]</span><br><span class="line">        article_id &#x3D; url1.split(&#39;&#x2F;&#39;)[-1]</span><br><span class="line">        content &#x3D; response.xpath(&quot;&#x2F;&#x2F;div[@class&#x3D;&#39;show-content&#39;]&quot;).get()</span><br><span class="line"></span><br><span class="line">        word_count &#x3D; response.xpath(&quot;&#x2F;&#x2F;span[@class&#x3D;&#39;wordage&#39;]&#x2F;text()&quot;).get()</span><br><span class="line">        comment_count &#x3D; response.xpath(&quot;&#x2F;&#x2F;span[@class&#x3D;&#39;comments-count&#39;]&#x2F;text()&quot;).get()</span><br><span class="line">        read_count &#x3D; response.xpath(&quot;&#x2F;&#x2F;span[@class&#x3D;&#39;views-count&#39;]&#x2F;text()&quot;).get()</span><br><span class="line">        like_count &#x3D; response.xpath(&quot;&#x2F;&#x2F;span[@class&#x3D;&#39;likes-count&#39;]&#x2F;text()&quot;).get()</span><br><span class="line"></span><br><span class="line">        subjects &#x3D; &quot;,&quot;.join(response.xpath(&quot;&#x2F;&#x2F;div[@class&#x3D;&#39;include-collection&#39;]&#x2F;a&#x2F;div&#x2F;text()&quot;).getall())</span><br><span class="line"></span><br><span class="line">        item &#x3D; ArticleItem(</span><br><span class="line">            title&#x3D;title,</span><br><span class="line">            avatar&#x3D;avatar,</span><br><span class="line">            author&#x3D;author,</span><br><span class="line">            pub_time&#x3D;pub_time,</span><br><span class="line">            article_id&#x3D;article_id,</span><br><span class="line">            origin_url&#x3D;response.url,</span><br><span class="line">            content&#x3D;content,</span><br><span class="line">            word_count&#x3D;word_count,</span><br><span class="line">            read_count&#x3D;read_count,</span><br><span class="line">            like_count&#x3D;like_count,</span><br><span class="line">            comment_count&#x3D;comment_count,</span><br><span class="line">            subjects&#x3D;subjects</span><br><span class="line">        )</span><br><span class="line">        yield item</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>把下载中间件加到 <code>settings.py</code>中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DOWNLOADER_MIDDLEWARES &#x3D; &#123;</span><br><span class="line">   &#39;jianshu_spider.middlewares.SeleniumDownloadMiddleware&#39;: 543,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-8-%E2%80%94%E2%80%94scrapy%E7%88%AC%E8%99%AB%E5%AE%9E%E6%88%98/" data-id="ck6m69dvm006e68vv4qza63dl"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" rel="tag">网络爬虫</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/14/%E5%85%AD%E3%80%81Scrapy-Redis-1-%E2%80%94%E2%80%94redis%E4%BB%8B%E7%BB%8D/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            六、Scrapy-Redis(1)——redis介绍
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/14/%E4%BA%94%E3%80%81Scrapy%E6%A1%86%E6%9E%B6-7-%E2%80%94%E2%80%94%E4%B8%8B%E8%BD%BD%E5%99%A8%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">五、Scrapy框架(7)——下载器中间件</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    一、网络请求(2)——urllib库 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-一、网络请求-2-——urllib库" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  一、网络请求(2)——urllib库
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/13/%E4%B8%80%E3%80%81%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82-2-%E2%80%94%E2%80%94urllib%E5%BA%93/" class="article-date">
+  <time datetime="2020-02-13T13:26:23.000Z" itemprop="datePublished">2020-02-13</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/">网络爬虫</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">13分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="urllib库"><a href="#urllib库" class="headerlink" title="urllib库"></a>urllib库</h2><a id="more"></a>
+<p>urllib 库是 Python中一个最基本的网络请求库。可以模拟浏览器的行为，向指定的服务器发送一个请求，并可以保存服务器返回的数据。</p>
+<h3 id="urlopen函数"><a href="#urlopen函数" class="headerlink" title="urlopen函数"></a>urlopen函数</h3><p>在Python3的 urllib 库中，所有和网络请求相关的方法，都被集中到 urllib.request 模块下面了，先来看下 urlopen 函数基本的使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from urllib import request</span><br><span class="line">resp &#x3D; request.urlopen(&#39;http:&#x2F;&#x2F;www.baidu.com&#39;)</span><br><span class="line">print(resp.read())</span><br></pre></td></tr></table></figure>
+
+<p>实际上，使用浏览器访问百度，右键查看源代码。你会发现，跟我们刚才打印出来的数据是一模一样的，也就是说，上面的三行代码就已经帮我们把百度的首页的全部代码爬下来了。一个基本的url请求对应的python代码真的非常简单。</p>
+<p>以下对 urlopen 函数进行详细讲解：</p>
+<ol>
+<li>url：请求的url</li>
+<li>data：请求的data，如果设置了这个值，那么将变成post 请求。</li>
+<li>返回值：返回值是一个 http.client.HTTPResponse 对象，这个对象是一个类文件句柄对象。</li>
+</ol>
+<p>方法：</p>
+<ul>
+<li>read(size)：读取多少字节数，如果为空，默认读取所有</li>
+<li>readline()：读取一行数据</li>
+<li>readlines()：读取多行数据</li>
+<li>getcode()：获取返回的状态码</li>
+</ul>
+<h3 id="urlretrieve函数"><a href="#urlretrieve函数" class="headerlink" title="urlretrieve函数"></a>urlretrieve函数</h3><p>这个函数可以方便的将网页上的一个文件保存到本地。以下代码可以非常方便的将百度的首页下载到本地：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">from urllib import request</span><br><span class="line">request.urlretrieve(&#39;http:&#x2F;&#x2F;www.baidu.com&#x2F;&#39;,&#39;baidu.html&#39;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="urlencode函数"><a href="#urlencode函数" class="headerlink" title="urlencode函数"></a>urlencode函数</h3><p>用浏览器发送请求的时候，如果 url 中包含了中文或者其他特殊字符，那么浏览器会自动的给我们进行编码。而如果使用代码发送请求，那么就必须手动的进行编码，这时候就应该使用 <code>urlencode</code> 函数来实现。 <code>urlencode</code> 可以把字典数据转换为 URL 编码的数据。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from urllib import parse</span><br><span class="line">data &#x3D; &#123;&#39;name&#39;:&#39;爬虫基础&#39;,&#39;greet&#39;:&#39;hello world&#39;,&#39;age&#39;:100&#125;</span><br><span class="line">qs &#x3D; parse.urlencode(data)</span><br><span class="line">print(qs)</span><br></pre></td></tr></table></figure>
+
+<h3 id="parse-qs函数"><a href="#parse-qs函数" class="headerlink" title="parse_qs函数"></a>parse_qs函数</h3><p>可以将经过编码后的url参数进行解码。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from urllib import parse</span><br><span class="line">qs &#x3D; &quot;name&#x3D;%E7%88%AC%E8%99%AB%E5%9F%BA%E7%A1%80&amp;greet&#x3D;hello+world&amp;age&#x3D;100&quot;</span><br><span class="line">print(parse.parse_qs(qs))</span><br></pre></td></tr></table></figure>
+
+<h3 id="urlparse和urlsplit"><a href="#urlparse和urlsplit" class="headerlink" title="urlparse和urlsplit"></a>urlparse和urlsplit</h3><p>有时候拿到一个url，想要对这个url中的各个组成部分进行分割，那么这时候就可以使用 <code>urlparse</code> 或者是 <code>urlsplit</code> 来进行分割。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">from urllib import parse</span><br><span class="line"></span><br><span class="line">url &#x3D; &#39;http:&#x2F;&#x2F;www.baidu.com&#x2F;s?wd&#x3D;python&amp;username&#x3D;abc#1&#39;</span><br><span class="line">result &#x3D; parse.urlsplit(url) # 没有params</span><br><span class="line"># result &#x3D; parse.urlparse(url)    # 有params</span><br><span class="line"></span><br><span class="line">print(&#39;scheme:&#39;,result.scheme)</span><br><span class="line">print(&#39;netloc:&#39;,result.netloc)</span><br><span class="line">print(&#39;path:&#39;,result.path)</span><br><span class="line">print(&#39;params:&#39;,result.params)</span><br><span class="line">print(&#39;query:&#39;,result.query)</span><br><span class="line">print(&#39;fragment:&#39;,result.fragment)</span><br></pre></td></tr></table></figure>
+
+<p><code>urlparse</code>和<code>urlsplit</code>基本上是一模一样的。唯一不一样的地方是，<code>urlparse</code>里面多了一个<code>params</code>属性，而<code>urlsplit</code>没有这个<code>params</code>属性。比如有一个<code>url</code>为：<code>url = &#39;http://www.baidu.com/s;hello?wd=python&amp;username=abc#1&#39;</code>，那么<code>urlparse</code>可以获取到<code>hello</code>，而<code>urlsplit</code>不可以获取到。<code>url</code>中的<code>params</code>也用得比较少。</p>
+<h3 id="request-Request类"><a href="#request-Request类" class="headerlink" title="request.Request类"></a>request.Request类</h3><p>如果想要在请求的时候增加一些请求头，那以就必须使用<code>request.Request</code>类来实现。比如要增加一个<code>User-Agent</code>，示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">from urllib import request,parse</span><br><span class="line"></span><br><span class="line">url &#x3D; &#39;https:&#x2F;&#x2F;www.lagou.com&#x2F;jobs&#x2F;positionAjax.json?px&#x3D;default&amp;city&#x3D;%E4%B8%8A%E6%B5%B7&amp;needAddtionalResult&#x3D;false&#39;</span><br><span class="line"></span><br><span class="line">headers &#x3D; &#123;</span><br><span class="line">    &#39;User-Agent&#39;:&#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;72.0.3626.121 Safari&#x2F;537.36&#39;,</span><br><span class="line">    &#39;Referer&#39;:&#39;https:&#x2F;&#x2F;www.lagou.com&#x2F;jobs&#x2F;list_python?px&#x3D;default&amp;city&#x3D;%E4%B8%8A%E6%B5%B7&#39;,</span><br><span class="line">&#125;</span><br><span class="line">data&#x3D;&#123;</span><br><span class="line">    &#39;first&#39;:&#39;true&#39;,</span><br><span class="line">    &#39;pn&#39;:1,</span><br><span class="line">    &#39;kd&#39;:&#39;python&#39;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">req &#x3D; request.Request(url,headers&#x3D;headers,data&#x3D;parse.urlencode(data).encode(&#39;utf-8&#39;),method&#x3D;&#39;POST&#39;)</span><br><span class="line">resp &#x3D; request.urlopen(req)</span><br><span class="line">print(resp.read().decode(&#39;utf-8&#39;))</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="内涵段子爬虫实战作业"><a href="#内涵段子爬虫实战作业" class="headerlink" title="内涵段子爬虫实战作业"></a>内涵段子爬虫实战作业</h3><ol>
+<li>url链接：<a href="http://neihanshequ.com/bar/1" target="_blank" rel="noopener">http://neihanshequ.com/bar/1</a></li>
+<li>要求：能爬取一页的数据就可以了</li>
+</ol>
+<h3 id="ProxyHandler处理器（代理设置）"><a href="#ProxyHandler处理器（代理设置）" class="headerlink" title="ProxyHandler处理器（代理设置）"></a>ProxyHandler处理器（代理设置）</h3><p>很多网站会检测某一段时间某个IP的访问次数（通过流量统计，系统日志等），如果访问次数多的不象正常人，它会禁止这个IP的访问。所以我们可以设置一些代理服务器，每隔一段时间换一个代理，就算IP被禁止，依然可以换个IP继续爬取。</p>
+<ol>
+<li>代理的原理：在请求目的网站之前，先请求代理服务器，然后让代理服务器去请求目的网站 ，代理服务器拿到目的网站的数据后，再转发给我们的代码。</li>
+<li><a href="http://httpbin.org/" target="_blank" rel="noopener">http://httpbin.org</a>： 这个网站可以方便的查看http请求的一些参数</li>
+<li>在代码中使用代理：<ul>
+<li>使用<code>urllib.request.ProxyHandler</code>，传入一个代理，这个代理是一个字典，字典的key依赖于代理服务器能够接收的类型，一般是<code>http</code>或者<code>https</code>,值是<code>ip:port</code>。</li>
+<li>使用上一步创建的<code>handler</code>，以及<code>request.build_opener</code>创建一个<code>opener</code>对象。</li>
+<li>使用上一步创建的<code>opener</code>，调用<code>open</code>函数，发起请求。</li>
+</ul>
+</li>
+</ol>
+<p>urllib 中通过ProxyHandler来设置使用代理服务器，下面代码说明如何使用自定义opener来使用代理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">from urllib import request</span><br><span class="line"></span><br><span class="line"># 这个是没有使用代理的</span><br><span class="line"># resp &#x3D; request.urlopen(&#39;http:&#x2F;&#x2F;httpbin.org&#x2F;get&#39;)</span><br><span class="line"># print(resp.read().decode(&#39;utf-8&#39;))</span><br><span class="line"></span><br><span class="line"># 这个是使用了代理的</span><br><span class="line">url &#x3D; &#39;http:&#x2F;&#x2F;httpbin.org&#x2F;ip&#39;</span><br><span class="line"># 1.使用 ProxyHandler 传入代理构建一个 handler</span><br><span class="line">handler &#x3D; request.ProxyHandler(&#123;&#39;http&#39;:&#39;118.122.114.236:9000&#39;&#125;)</span><br><span class="line"># 2. 使用上面创建的 handler 构建一个 opener</span><br><span class="line">opener &#x3D; request.build_opener(handler)</span><br><span class="line"># 3. 使用 opener 去发送一个请求</span><br><span class="line">resp &#x3D; opener.open(url)</span><br><span class="line">print(resp.read())</span><br></pre></td></tr></table></figure>
+
+
+
+<p>常用的代理有：</p>
+<ul>
+<li>西制免费代理IP：<a href="http://www.xicidaili.com/" target="_blank" rel="noopener">http://www.xicidaili.com</a></li>
+<li>快代理：<a href="http://www.kuaidaili.com/" target="_blank" rel="noopener">http://www.kuaidaili.com</a></li>
+<li>代理云：<a href="http://www.dailiyun.com/" target="_blank" rel="noopener">http://www.dailiyun.com</a></li>
+</ul>
+<h3 id="什么是cookie？"><a href="#什么是cookie？" class="headerlink" title="什么是cookie？"></a>什么是cookie？</h3><p>在网站中，http请求是无状态的，也就是说即使第一次和服务器连接后并且登录成功后，第二次请求服务器依然不能知道当前请求是哪个用户。<code>cookie</code>的出现就是为了解决这个问题，第一次登录后服务器返回一些数据(cookie)给浏览器，然后浏览器保存在本地，当该用户发送第二次请求的时候，就会自动把上次请求存储的<code>cookie</code>数据自动的携带给服务器，服务器通过浏览器携带的数据就能判断当前用户是哪个了。<code>cookie</code>存储的数据量有限，不同的浏览器有不同的存储大小，但一般不超过4KB。因此使用<code>cookie</code>只能存储一些小量的数据。</p>
+<h4 id="cookie的格式"><a href="#cookie的格式" class="headerlink" title="cookie的格式"></a>cookie的格式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie:NAME&#x3D;VALUE;Expires&#x2F;Max-age&#x3D;DATE;Path&#x3D;PATH;Domain&#x3D;DOMAIN_NAME;SECURE</span><br></pre></td></tr></table></figure>
+
+<p>参数意义：</p>
+<ul>
+<li>NAME：cookie的名字</li>
+<li>VALUE：cookie的值</li>
+<li>Expires：cookie的过期时间</li>
+<li>Path：cookie作用的路径</li>
+<li>Domain：cookie作用的域名</li>
+<li>SECURE：是否只在https协议下起作用。</li>
+</ul>
+<h3 id="使用cookielib库和HTTPCookieProcessor模拟登录"><a href="#使用cookielib库和HTTPCookieProcessor模拟登录" class="headerlink" title="使用cookielib库和HTTPCookieProcessor模拟登录"></a>使用cookielib库和HTTPCookieProcessor模拟登录</h3><p>Cookie是指网站服务器为了辨别用户身份和进行Session跟踪，而储存在用户浏览器上的文本文件，Cookie可以保持登录信息到用户下次与服务器的会话。</p>
+<p>这里以人人网为例，人人网中，要访问某个人的主页，必须先登录才能访问，登录说白了就是要有<code>cookie</code>的信息。那么如果我们想要用代码的方式访问，就必须要有正确的<code>cookie</code>信息才能访问。解决方案有两种，第一种是使用浏览器访问，然后将<code>cookie</code>信息复制下来，放到<code>headers</code>中。示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">from urllib import request</span><br><span class="line"></span><br><span class="line"># 大鹏董成鹏主页：http:&#x2F;&#x2F;www.renren.com&#x2F;880151247&#x2F;profile</span><br><span class="line"># 人人网登录url：http:&#x2F;&#x2F;www.renren.com&#x2F;PLogin.do</span><br><span class="line"></span><br><span class="line">#1.不使用 cookie 去请求大鹏的主页</span><br><span class="line">dapeng_url &#x3D; &quot;http:&#x2F;&#x2F;www.renren.com&#x2F;880151247&#x2F;profile&quot;</span><br><span class="line">headers &#x3D; &#123;</span><br><span class="line">    &#39;User-Agent&#39;:&#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;72.0.3626.121 Safari&#x2F;537.36&#39;,</span><br><span class="line">    &#39;Cookie&#39;:&#39;anonymid&#x3D;jt75deea1mav2z; depovince&#x3D;SH; jebecookies&#x3D;842f59db-ac85-4ccf-bc5d-89e0ed90c533|||||; _r01_&#x3D;1; JSESSIONID&#x3D;abcCVukf0adNo_gT752Lw; ick_login&#x3D;83dc3768-6560-49e1-9f60-89750c9c0708; _de&#x3D;020D07FA7C972D7F9693B941A6D5CC6732E0B9ADC37B4602; p&#x3D;d1afe6d3669e2b81f53082455819c0d45; first_login_flag&#x3D;1; ln_uact&#x3D;renjy185911222@126.com; ln_hurl&#x3D;http:&#x2F;&#x2F;hd60.xiaonei.com&#x2F;photos&#x2F;hd60&#x2F;20071127&#x2F;16&#x2F;52&#x2F;main_3012f107.jpg; t&#x3D;e3d3d615ccd5c73c8160234d70b7f9505; societyguester&#x3D;e3d3d615ccd5c73c8160234d70b7f9505; id&#x3D;236210555; xnsid&#x3D;8917e94c; loginfrom&#x3D;syshome; wp_fold&#x3D;0&#39;</span><br><span class="line">&#125;</span><br><span class="line">req &#x3D; request.Request(url&#x3D;dapeng_url,headers&#x3D;headers)</span><br><span class="line">resp &#x3D; request.urlopen(req)</span><br><span class="line">with open(&#39;renren.html&#39;,&#39;w&#39;,encoding&#x3D;&#39;utf-8&#39;) as fp:</span><br><span class="line">    # write函数必须写入一个str的数据类型</span><br><span class="line">    # resp.read()读出来的是一个bytes数据类型</span><br><span class="line">    # bytes -&gt;decode -&gt; str</span><br><span class="line">    # str -&gt; encode -&gt; bytes</span><br><span class="line">    fp.write(resp.read().decode(&quot;utf-8&quot;))</span><br></pre></td></tr></table></figure>
+
+
+
+<p>但是每次在访问需要cookie的页面都要从浏览器中复制cookie比较麻烦。在Python处理Cookie，一般是通过<code>http.cookiejar</code>模块和<code>urllib</code>模块的<code>HTTPCookieProcessor</code>处理器类一起使用。<code>http.cookiejar</code>模块主要作用是提供用于存储 cookie 的对象。而 <code>HTTPCookieProcessor</code>处理器主要作用是处理这些 cookie 对象，并构建 handler 对象。</p>
+<h4 id="http-cookiejar模块"><a href="#http-cookiejar模块" class="headerlink" title="http.cookiejar模块"></a>http.cookiejar模块</h4><p>该模块主要的类有CookieJar、FileCookieJar、MozillaCookieJar、LWPCookieJar。这四个类的作用分别如下：</p>
+<ol>
+<li>CookieJar：管理HTTP cookie值、存储HTTP请求生成的cookie，向传出的HTTP请求添加cookie的对象。整个cookie都存储在内存中，对CookieJar实例进行垃圾回收后cookie也将丢失。</li>
+<li>FileCookieJar(filename，delayload=None;policy=None)：从CookieJar派生而来，用来创建FileCookieJar实例，检索cookie信息并将cookie存储到文件中。filename是存储 cookie的文件名。delayload为True时支持延迟访问文件，即只有在需要时才读取文件或在文件中存储数据。</li>
+<li>MozillaCookieJar(filename，delayload=None;policy=None)：从CookieJar派生而来，创建与Mozilla浏览器 cookies.txt 兼容的 FileCookieJar 实例。</li>
+<li>LWPCookieJar(filename，delayload=None;policy=None)：从CookieJar派生而来，创建与libwww-per标准的 Set-Cookie3文件格式兼容的 FileCookieJar 实例。</li>
+</ol>
+<p>利用 <code>http.cookiejar</code> 和 <code>request.HTTPCookieProcessor</code> 登录人人网。相关示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">from urllib import request, parse</span><br><span class="line">from http.cookiejar import CookieJar</span><br><span class="line"></span><br><span class="line">headers &#x3D; &#123;</span><br><span class="line">    &#39;User-Agent&#39;: &#39;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;72.0.3626.121 Safari&#x2F;537.36&#39;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def get_opener():</span><br><span class="line">    # 1. 登录</span><br><span class="line">    # 1.1 创建一个cookiejar对象</span><br><span class="line">    cookiejar &#x3D; CookieJar()</span><br><span class="line">    # 1.2 使用 cookiejar 创建一个 HTTPCookieProcessor对象</span><br><span class="line">    handler &#x3D; request.HTTPCookieProcessor(cookiejar)</span><br><span class="line">    # 1.3 使用上一步创建的handler创建一个opener</span><br><span class="line">    opener &#x3D; request.build_opener(handler)</span><br><span class="line">    return opener</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def login_renren(opener):</span><br><span class="line">    # 1.4 使用 opener发送登录的请求（人人网的邮箱和密码）</span><br><span class="line">    data &#x3D; &#123;</span><br><span class="line">        &#39;email&#39;: &#39;renjy185911222@126.com&#39;,</span><br><span class="line">        &#39;password&#39;: &#39;caonima001&#39;</span><br><span class="line">    &#125;</span><br><span class="line">    login_url &#x3D; &quot;http:&#x2F;&#x2F;www.renren.com&#x2F;PLogin.do&quot;</span><br><span class="line">    req &#x3D; request.Request(login_url, data&#x3D;parse.urlencode(data).encode(&#39;utf-8&#39;), headers&#x3D;headers)</span><br><span class="line">    opener.open(req)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def visit_profile(opener):</span><br><span class="line">    # 2.访问个人主页</span><br><span class="line">    dapeng_url &#x3D; &quot;http:&#x2F;&#x2F;www.renren.com&#x2F;880151247&#x2F;profile&quot;</span><br><span class="line">    # 获取个人主页的页面的时候，不要新建一个opener</span><br><span class="line">    # 而应该使用之前的那个opener，因为之前的那个opener已经包含了登录所需要的cookie信息</span><br><span class="line">    req &#x3D; request.Request(dapeng_url, headers&#x3D;headers)</span><br><span class="line">    resp &#x3D; opener.open(req)</span><br><span class="line">    with open(&#39;renren.html&#39;, &#39;w&#39;, encoding&#x3D;&#39;utf-8&#39;) as fp:</span><br><span class="line">        fp.write(resp.read().decode(&#39;utf-8&#39;))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    opener &#x3D; get_opener()</span><br><span class="line">    login_renren(opener)</span><br><span class="line">    visit_profile(opener)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="保存cookie到本地"><a href="#保存cookie到本地" class="headerlink" title="保存cookie到本地"></a>保存cookie到本地</h3><p>保存<code>cookie</code>到本地，可以使用<code>cookiejar</code>的<code>save</code>方法，并且需要指定一个文件名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from urllib import request</span><br><span class="line">from http.cookiejar import MozillaCookieJar</span><br><span class="line"></span><br><span class="line"># 保存cookie到本地</span><br><span class="line">cookiejar &#x3D; MozillaCookieJar(&#39;cookie.txt&#39;)</span><br><span class="line">handler &#x3D; request.HTTPCookieProcessor(cookiejar)</span><br><span class="line">opener &#x3D; request.build_opener(handler)</span><br><span class="line"></span><br><span class="line">resp &#x3D; opener.open(&#39;http:&#x2F;&#x2F;httpbin.org&#x2F;cookies&#39;)</span><br><span class="line"></span><br><span class="line">cookiejar.save(ignore_discard&#x3D;True)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="从本地加载cookie"><a href="#从本地加载cookie" class="headerlink" title="从本地加载cookie"></a>从本地加载cookie</h3><p>从本地加载<code>cookie</code>，需要使用<code>cookiejar</code>的<code>load</code>方法，并且也需要指定方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">from urllib import request</span><br><span class="line">from http.cookiejar import MozillaCookieJar</span><br><span class="line"></span><br><span class="line"># 保存cookie到本地</span><br><span class="line">cookiejar &#x3D; MozillaCookieJar(&#39;cookie.txt&#39;)</span><br><span class="line">cookiejar.load(ignore_discard&#x3D;True)</span><br><span class="line">handler &#x3D; request.HTTPCookieProcessor(cookiejar)</span><br><span class="line">opener &#x3D; request.build_opener(handler)</span><br><span class="line"></span><br><span class="line">resp &#x3D; opener.open(&#39;http:&#x2F;&#x2F;httpbin.org&#x2F;cookies&#39;)</span><br><span class="line">for cookie in cookiejar:</span><br><span class="line">    print(cookie)</span><br><span class="line"></span><br><span class="line"># cookiejar.save(ignore_discard&#x3D;True)</span><br></pre></td></tr></table></figure>
+
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/02/13/%E4%B8%80%E3%80%81%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82-2-%E2%80%94%E2%80%94urllib%E5%BA%93/" data-id="ck6m69dut004q68vvetnu02m0"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" rel="tag">网络爬虫</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/13/%E4%B8%80%E3%80%81%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82-3-%E2%80%94%E2%80%94requests%E5%BA%93/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            一、网络请求(3)——requests库
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/13/%E4%B8%80%E3%80%81%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82-1-%E2%80%94%E2%80%94%E7%88%AC%E8%99%AB%E5%89%8D%E5%A5%8F/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">一、网络请求(1)——爬虫前奏</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278605418&amp;web_id=1278605418'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>
