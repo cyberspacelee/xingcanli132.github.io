@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    接口、多态 |  Cyberspace Cloner
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-10-接口、多态" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  接口、多态
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/03/26/10-%E6%8E%A5%E5%8F%A3%E3%80%81%E5%A4%9A%E6%80%81/" class="article-date">
+  <time datetime="2020-03-26T07:23:42.000Z" itemprop="datePublished">2020-03-26</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Java%E5%9F%BA%E7%A1%80/">Java基础</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">4.7k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">18分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h1 id="接口、多态"><a href="#接口、多态" class="headerlink" title="接口、多态"></a>接口、多态</h1><h2 id="1-接口"><a href="#1-接口" class="headerlink" title="1.接口"></a>1.接口</h2><a id="more"></a>
+
+<h3 id="1-1概述"><a href="#1-1概述" class="headerlink" title="1.1概述"></a>1.1概述</h3><p>接口，是Java语言中一种引用类型，是方法的集合，如果说类的内部封装了成员变量、构造方法和成员方法，那么接口的内部主要就是封装了方法，包含抽象方法（JDK 7及以前），默认方法和静态方法（JDK 8），私有方法（JDK 9）。接口的定义，它与定义类方式相似，但是使用 interface 关键字。它也会被编译成.class文件，但一定要明确它并不是类，而是另外一种引用数据类型。引用数据类型：数组，类，接口。接口的使用，它不能创建对象，但是可以被实现（ implements ，类似于被继承）。一个实现接口的类（可以看做是接口的子类），需要实现接口中所有的抽象方法，创建该类对象，就可以调用方法了，否则它必须是一个抽象类。<strong>接口就是多个类的公共规范。</strong></p>
+<h3 id="1-2定义格式"><a href="#1-2定义格式" class="headerlink" title="1.2定义格式"></a>1.2定义格式</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> 接口名称 </span>&#123;</span><br><span class="line">    <span class="comment">// 接口内容</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3在任何版本的Java中，接口都能定义抽象方法"><a href="#1-3在任何版本的Java中，接口都能定义抽象方法" class="headerlink" title="1.3在任何版本的Java中，接口都能定义抽象方法"></a>1.3在任何版本的Java中，接口都能定义抽象方法</h3><p>格式：</p>
+<ul>
+<li><code>public abstract</code> 返回值类型 方法名称(参数列表);</li>
+</ul>
+<p><strong>注意事项：</strong></p>
+<ul>
+<li>接口当中的抽象方法，修饰符必须是两个固定的关键字：public abstract</li>
+<li>这两个关键字修饰符，可以选择性地省略。</li>
+<li>方法的三要素，可以随意定义。</li>
+</ul>
+<p>举例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">package demo01;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public interface MyInterfaceAbstract &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 这是一个抽象方法</span><br><span class="line">    public abstract void methodAbs1();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 这也是抽象方法</span><br><span class="line">    abstract void methodAbs2();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 这也是抽象方法</span><br><span class="line">    public void methodAbs3();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 这也是抽象方法</span><br><span class="line">    void methodAbs4();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-4在任何版本的Java中，接口都能定义常量"><a href="#1-4在任何版本的Java中，接口都能定义常量" class="headerlink" title="1.4在任何版本的Java中，接口都能定义常量"></a>1.4在任何版本的Java中，接口都能定义常量</h3><p>接口当中也可以定义“成员变量”，但是必须使用public static final三个关键字进行修饰。从效果上看，这其实就是接口的【常量】。</p>
+<p><strong>格式：</strong></p>
+<ul>
+<li>public static final 数据类型 常量名称 = 数据值;</li>
+</ul>
+<p>备注：</p>
+<ul>
+<li>一旦使用final关键字进行修饰，说明不可改变。</li>
+</ul>
+<p><strong>注意事项：</strong></p>
+<ul>
+<li><p>接口当中的常量，可以省略public static final，注意：不写也照样是这样。</p>
+</li>
+<li><p>接口当中的常量，必须进行赋值；不能不赋值。</p>
+</li>
+<li><p>接口中常量的名称，使用完全大写的字母，用下划线进行分隔。（推荐命名规则）</p>
+<p>举例：</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyInterfaceConst</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这其实就是一个常量，一旦赋值，不可以修改</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> NUM_OF_MY_CLASS = <span class="number">12</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5接口使用步骤："><a href="#1-5接口使用步骤：" class="headerlink" title="1.5接口使用步骤："></a>1.5接口使用步骤：</h3><p>1：接口不能直接使用，必须有一个“实现类”来“实现”该接口。<br><strong>格式：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 实现类名称 <span class="keyword">implements</span> 接口名称 </span>&#123;</span><br><span class="line">　　<span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2：接口的实现类必须覆盖重写（实现）接口中所有的抽象方法。实现：去掉abstract关键字，加上方法体大括号。<br>3：创建实现类的对象，进行使用。</p>
+<p>2：接口的实现类必须覆盖重写（实现）接口中所有的抽象方法。实现：去掉abstract关键字，加上方法体大括号。<br>3：创建实现类的对象，进行使用。</p>
+<p>注意事项：</p>
+<ul>
+<li>如果实现类并没有覆盖重写接口中所有的抽象方法，那么这个实现类自己就必须是抽象类。</li>
+</ul>
+<p><strong>代码举例</strong></p>
+<p>定义接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo01;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">LiveAble</span> </span>&#123;</span><br><span class="line">    <span class="comment">//定义常量</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> NUM_OF_MY_CLASS = <span class="number">12</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 定义抽象方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">sleep</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义实现类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo01;</span><br><span class="line"><span class="comment">//定义实现类，实现接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Animal</span> <span class="keyword">implements</span> <span class="title">LiveAble</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"吃东西"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sleep</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"晚上睡"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo01;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InterfaceDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建实现类对象</span></span><br><span class="line">        Animal a = <span class="keyword">new</span> Animal();</span><br><span class="line">        <span class="comment">// 访问接口当中的常量</span></span><br><span class="line">        System.out.println(LiveAble.NUM_OF_MY_CLASS);<span class="comment">//12</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 调用实现后的方法</span></span><br><span class="line">        a.eat();<span class="comment">// 吃东西</span></span><br><span class="line">        a.sleep();<span class="comment">// 晚上睡</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-6从Java-8开始，接口里允许定义默认方法"><a href="#1-6从Java-8开始，接口里允许定义默认方法" class="headerlink" title="1.6从Java 8开始，接口里允许定义默认方法"></a>1.6从Java 8开始，接口里允许定义默认方法</h3><p><strong>格式：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">default</span> 返回值类型 方法名称(参数列表) &#123;</span><br><span class="line">　　<span class="comment">//方法体</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>备注：</strong>接口当中的默认方法，可以解决接口升级的问题。</p>
+<p><strong>默认方法的使用</strong></p>
+<ul>
+<li>可以继承，可以重写，二选一，但是只能通过实现类的对象来调用。</li>
+</ul>
+<p><strong>举例：</strong></p>
+<p>定义接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo01;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyInterfaceDefault</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 添加默认方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">default</span> <span class="keyword">void</span> <span class="title">methodDefault</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"这是新添加的默认方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义实现类，继承默认方法，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo01;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyInterfaceDefaultA</span> <span class="keyword">implements</span> <span class="title">MyInterfaceDefault</span> </span>&#123;　　</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义实现类，重写默认方法，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo01;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyInterfaceDefaultB</span> <span class="keyword">implements</span> <span class="title">MyInterfaceDefault</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">methodDefault</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"实现类B覆盖重写了接口的默认方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo01;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">1. 接口的默认方法，可以通过接口实现类对象，直接调用。</span></span><br><span class="line"><span class="comment">2. 接口的默认方法，也可以被接口实现类进行覆盖重写。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo02Interface</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建了实现类对象</span></span><br><span class="line">        MyInterfaceDefaultA a = <span class="keyword">new</span> MyInterfaceDefaultA();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 调用默认方法，如果实现类当中没有，会向上找接口</span></span><br><span class="line">        a.methodDefault(); <span class="comment">// 这是新添加的默认方法</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 创建了实现类对象</span></span><br><span class="line">        MyInterfaceDefaultB b = <span class="keyword">new</span> MyInterfaceDefaultB();</span><br><span class="line">        b.methodDefault(); <span class="comment">// 实现类B覆盖重写了接口的默认方法</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-7从Java-8开始，接口当中允许定义静态方法"><a href="#1-7从Java-8开始，接口当中允许定义静态方法" class="headerlink" title="1.7从Java 8开始，接口当中允许定义静态方法"></a>1.7从Java 8开始，接口当中允许定义静态方法</h3><p><strong>格式：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> 返回值类型 方法名称(参数列表) &#123;</span><br><span class="line">　　　　方法体</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>静态方法的使用</strong></p>
+<ul>
+<li>静态与.class 文件相关，只能使用接口名调用，不可以通过实现类的类名或者实现类的对象调用</li>
+</ul>
+<p>举例</p>
+<p>定义接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyInterfaceStatic</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">methodStatic</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"这是接口的静态方法！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo01;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">注意事项：不能通过接口实现类的对象来调用接口当中的静态方法。</span></span><br><span class="line"><span class="comment">正确用法：通过接口名称，直接调用其中的静态方法。</span></span><br><span class="line"><span class="comment">格式：</span></span><br><span class="line"><span class="comment">接口名称.静态方法名(参数);</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo03Interface</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    ;</span><br><span class="line">        <span class="comment">// 直接通过接口名称调用静态方法</span></span><br><span class="line">        MyInterfaceStatic.methodStatic();<span class="comment">//这是接口的静态方法！</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-8从Java-9开始，接口当中允许定义私有方法"><a href="#1-8从Java-9开始，接口当中允许定义私有方法" class="headerlink" title="1.8从Java 9开始，接口当中允许定义私有方法"></a>1.8从Java 9开始，接口当中允许定义私有方法</h3><ol>
+<li><p>普通私有方法，解决多个默认方法之间重复代码问题<br><strong>格式：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> 返回值类型 方法名称(参数列表) &#123;</span><br><span class="line">　　方法体</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>静态私有方法，解决多个静态方法之间重复代码问题<br><strong>格式：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> 返回值类型 方法名称(参数列表) &#123;</span><br><span class="line">　　方法体</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>如果一个接口中有多个默认方法，并且方法中有重复的内容，那么可以抽取出来，封装到私有方法中，供默认方法去调用。从设计的角度讲，私有的方法是对默认方法和静态方法的辅助。</p>
+<p><strong>私有方法的使用</strong></p>
+<ul>
+<li><strong>私有方法：</strong>只有默认方法可以调用。</li>
+<li><strong>私有静态方法：</strong>默认方法和静态方法可以调用。</li>
+</ul>
+<p>举例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        func2();</span><br><span class="line">        func3();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        func3();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//只有默认方法可以调用。</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"跑起来~~~"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//默认方法和静态方法可以调用。</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">func3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"跑起来~~~"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-9使用接口的时候，需要注意："><a href="#1-9使用接口的时候，需要注意：" class="headerlink" title="1.9使用接口的时候，需要注意："></a>1.9使用接口的时候，需要注意：</h3><p>1：接口是没有静态代码块或者构造方法的。<br>2：一个类的直接父类是唯一的，但是一个类可以同时实现多个接口。<br><strong>格式：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyInterfaceImpl</span> <span class="keyword">implements</span> <span class="title">MyInterfaceA</span>, <span class="title">MyInterfaceB</span> </span>&#123;</span><br><span class="line">　　<span class="comment">// 覆盖重写所有抽象方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3：如果实现类所实现的多个接口当中，存在重复的抽象方法，那么只需要覆盖重写一次即可。<br>4：如果实现类没有覆盖重写所有接口当中的所有抽象方法，那么实现类就必须是一个抽象类。<br>5：如果实现类所实现的多个接口当中，存在重复的默认方法，那么实现类一定要对冲突的默认方法进行覆盖重写。<br>6：一个类如果直接父类当中的方法，和接口当中的默认方法产生了冲突，优先用父类当中的方法。</p>
+<p>3：如果实现类所实现的多个接口当中，存在重复的抽象方法，那么只需要覆盖重写一次即可。<br>4：如果实现类没有覆盖重写所有接口当中的所有抽象方法，那么实现类就必须是一个抽象类。<br>5：如果实现类所实现的多个接口当中，存在重复的默认方法，那么实现类一定要对冲突的默认方法进行覆盖重写。<br>6：一个类如果直接父类当中的方法，和接口当中的默认方法产生了冲突，优先用父类当中的方法。</p>
+<h3 id="1-10接口的多实现"><a href="#1-10接口的多实现" class="headerlink" title="1.10接口的多实现"></a>1.10接口的多实现</h3><ul>
+<li>类与类之间是单继承的。直接父类只有一个。</li>
+<li>类与接口之间是多实现的。一个类可以实现多个接口。</li>
+<li>接口与接口之间是多继承的。</li>
+</ul>
+<p><strong>注意事项：</strong></p>
+<ul>
+<li>多个父接口当中的抽象方法如果重复，没关系。</li>
+<li>多个父接口当中的默认方法如果重复，那么子接口必须进行默认方法的覆盖重写，【而且带着default关键字】。</li>
+</ul>
+<h2 id="2-多态"><a href="#2-多态" class="headerlink" title="2.多态"></a>2.多态</h2><h3 id="2-1概述"><a href="#2-1概述" class="headerlink" title="2.1概述"></a>2.1概述</h3><p>多态是继封装、继承之后，面向对象的第三大特性。生活中，比如跑的动作，小猫、小狗和大象，跑起来是不一样的。再比如飞的动作，昆虫、鸟类和飞机，飞起来也是不一样的。可见，同一行为，通过不同的事物，可以体现出来的不同的形态。多态，描述的就是这样的状态。</p>
+<h3 id="2-2定义"><a href="#2-2定义" class="headerlink" title="2.2定义"></a>2.2定义</h3><p><strong>多态：</strong> 是指同一行为，具有多个不同表现形式。</p>
+<h3 id="2-3前提"><a href="#2-3前提" class="headerlink" title="2.3前提"></a>2.3前提</h3><ul>
+<li>继承或者实现【二选一】</li>
+<li>方法的重写【意义体现：不重写，无意义】</li>
+<li>父类引用指向子类对象【格式体现】</li>
+</ul>
+<h3 id="2-4多态的体现"><a href="#2-4多态的体现" class="headerlink" title="2.4多态的体现"></a>2.4多态的体现</h3><p><strong>多态体现的格式：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">父类类型 变量名 = <span class="keyword">new</span> 子类对象;</span><br><span class="line">变量名.方法名();</span><br></pre></td></tr></table></figure>
+
+<p>父类类型：指子类对象继承的父类类型，或者实现的父类接口类型。</p>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Fu f = <span class="keyword">new</span> Zi();</span><br><span class="line">f.method();</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5多态情况下，成员变量的访问"><a href="#2-5多态情况下，成员变量的访问" class="headerlink" title="2.5多态情况下，成员变量的访问"></a>2.5多态情况下，成员变量的访问</h3><p>访问成员变量的两种方式：</p>
+<ul>
+<li><strong>直接通过对象名称访问成员变量：</strong>看等号左边是谁，优先用谁，没有则向上找。</li>
+<li><strong>间接通过成员方法访问成员变量：</strong>看该方法属于谁，优先用谁，没有则向上找。</li>
+</ul>
+<h3 id="2-6多态情况下，成员方法的访问"><a href="#2-6多态情况下，成员方法的访问" class="headerlink" title="2.6多态情况下，成员方法的访问"></a>2.6多态情况下，成员方法的访问</h3><p>当使用多态方式调用方法时，首先检查父类中是否有该方法，如果没有，则编译错误；如果有，执行的是子类重写后方法。</p>
+<p><strong>代码举例：</strong></p>
+<p>定义父类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo02;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Fu</span> /*<span class="keyword">extends</span> <span class="title">Object</span>*/ </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> num = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showNum</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(num);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"父类方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">methodFu</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"父类特有方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义子类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo02;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Zi</span> <span class="keyword">extends</span> <span class="title">Fu</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> num = <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">16</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showNum</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(num);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"子类方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">methodZi</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"子类特有方法"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo02;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 使用多态的写法，父类引用指向子类对象</span></span><br><span class="line">        Fu obj = <span class="keyword">new</span> Zi();</span><br><span class="line">        System.out.println(obj.num); <span class="comment">// 10</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 子类没有覆盖重写，就是父：10子类，如果覆盖重写，就是子：20</span></span><br><span class="line">        obj.showNum();<span class="comment">//20</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 父子都有，优先用子</span></span><br><span class="line">        obj.method();<span class="comment">//子类方法</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 子类没有，父类有，向上找到父类</span></span><br><span class="line">        obj.methodFu();<span class="comment">//父类特有方法</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 编译看左边，左边是Fu，Fu当中没有methodZi方法，所以编译报错。obj.methodZi();  错误写法！</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-7多态的好处"><a href="#2-7多态的好处" class="headerlink" title="2.7多态的好处"></a>2.7多态的好处</h3><p>实际开发的过程中，父类类型作为方法形式参数，传递子类对象给方法，进行方法的调用，更能体现出多态的扩展性与便利。代码如下：</p>
+<p>定义父类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo03;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义子类Cat</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo03;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"吃鱼"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义子类Dog</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo03;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"吃骨头"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo03;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 多态形式，创建对象</span></span><br><span class="line">        Cat c = <span class="keyword">new</span> Cat();</span><br><span class="line">        Dog d = <span class="keyword">new</span> Dog();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 调用showCatEat</span></span><br><span class="line">        showCatEat(c);</span><br><span class="line">        <span class="comment">// 调用showDogEat</span></span><br><span class="line">        showDogEat(d);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">/*以上两个方法, 均可以被showAnimalEat(Animal a)方法所替代 而执行效果一致 */</span></span><br><span class="line">        showAnimalEat(c);</span><br><span class="line">        showAnimalEat(d);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">showCatEat</span><span class="params">(Cat c)</span> </span>&#123;</span><br><span class="line">        c.eat();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">showDogEat</span><span class="params">(Dog d)</span> </span>&#123;</span><br><span class="line">        d.eat();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">showAnimalEat</span><span class="params">(Animal a)</span> </span>&#123;</span><br><span class="line">        a.eat();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于多态特性的支持，showAnimalEat方法的Animal类型，是Cat和Dog的父类类型，父类类型接收子类对象，当然可以把Cat对象和Dog对象，传递给方法。当eat方法执行时，多态规定，执行的是子类重写的方法，那么效果自然与showCatEat、showDogEat方法一致，所以showAnimalEat完全可以替代以上两方法。不仅仅是替代，在扩展性方面，无论之后再多的子类出现，我们都不需要编写showXxxEat方法了，直接使用showAnimalEat都可以完成。所以，多态的好处，体现在，可以使程序编写的更简单，并有良好的扩展。</p>
+<h3 id="2-8多态的弊端"><a href="#2-8多态的弊端" class="headerlink" title="2.8多态的弊端"></a>2.8多态的弊端</h3><p>当使用多态方式调用方法时，首先检查父类中是否有该方法，如果没有，则编译错误。也就是说，不能调用子类拥有，而父类没有的方法。编译都错误，更别说运行了。这也是多态给我们带来的一点”小麻烦”。所以，想要调用子类特有的方法，必须做向下转型。</p>
+<h3 id="2-9引用类型转换"><a href="#2-9引用类型转换" class="headerlink" title="2.9引用类型转换"></a>2.9引用类型转换</h3><p>多态的转型分为向上转型与向下转型两种：</p>
+<p><strong>向上转型</strong></p>
+<ul>
+<li>向上转型：多态本身是子类类型向父类类型向上转换的过程，这个过程是默认的。</li>
+</ul>
+<p>当父类引用指向一个子类对象时，便是向上转型。</p>
+<p><strong>使用格式</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">父类类型 变量名 = <span class="keyword">new</span> 子类类型();</span><br><span class="line">如：Animal a = <span class="keyword">new</span> Cat();</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-10向下转型"><a href="#2-10向下转型" class="headerlink" title="2.10向下转型"></a>2.10向下转型</h3><p>向下转型：父类类型向子类类型向下转换的过程，这个过程是强制的。一个已经向上转型的子类对象，将父类引用转为子类引用，可以使用强制类型转换的格式，便是向下转型。</p>
+<p><strong>使用格式：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">子类类型 变量名 = 子类类型 父类变量名;</span><br><span class="line">如：Cat c = (Cat) a;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-11转型的异常"><a href="#2-11转型的异常" class="headerlink" title="2.11转型的异常"></a>2.11转型的异常</h3><p>转型的过程中，一不小心就会遇到这样的问题，请看如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 向上转型</span></span><br><span class="line">        Animal a = <span class="keyword">new</span> Cat();</span><br><span class="line">        a.eat(); <span class="comment">// 调用的是 Cat 的 eat </span></span><br><span class="line">        <span class="comment">// 向下转型 </span></span><br><span class="line">        Dog d = (Dog) a;</span><br><span class="line">        d.watchHouse(); <span class="comment">// 调用的是 Dog 的 watchHouse 【运行报错】</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码可以通过编译，但是运行时，却报出了 ClassCastException ，类型转换异常！这是因为，明明创建了Cat类型对象，运行时，当然不能转换成Dog对象的。这两个类型并没有任何继承关系，不符合类型转换的定义。为了避免ClassCastException的发生，Java提供了 instanceof 关键字，给引用变量做类型的校验，<strong>格式如下：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">变量名 <span class="keyword">instanceof</span> 数据类型</span><br><span class="line">如果变量属于该数据类型，返回<span class="keyword">true</span>；</span><br><span class="line">如果变量不属于该数据类型，返回fase。</span><br></pre></td></tr></table></figure>
+
+<p>所以，转换前，我们最好先做一个判断，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 向上转型</span></span><br><span class="line">        Animal a = <span class="keyword">new</span> Cat();</span><br><span class="line">        a.eat(); <span class="comment">// 调用的是 Cat 的 eat</span></span><br><span class="line">        <span class="comment">// 向下转型</span></span><br><span class="line">        <span class="keyword">if</span> (a <span class="keyword">instanceof</span> Cat) &#123;</span><br><span class="line">            Cat c = (Cat) a;</span><br><span class="line">            c.catchMouse(); <span class="comment">// 调用的是 Cat 的 catchMouse </span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (a <span class="keyword">instanceof</span> Dog) &#123;</span><br><span class="line">            Dog d = (Dog) a;</span><br><span class="line">            d.watchHouse(); <span class="comment">// 调用的是 Dog 的 watchHouse </span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-接口多态的综合案例"><a href="#3-接口多态的综合案例" class="headerlink" title="3.接口多态的综合案例"></a>3.接口多态的综合案例</h2><h3 id="笔记本电脑"><a href="#笔记本电脑" class="headerlink" title="笔记本电脑"></a>笔记本电脑</h3><p>笔记本电脑（laptop）通常具备使用USB设备的功能。在生产时，笔记本都预留了可以插入USB设备的USB接口，但具体是什么USB设备，笔记本厂商并不关心，只要符合USB规格的设备都可以。定义USB接口，具备最基本的开启功能和关闭功能。鼠标和键盘要想能在电脑上使用，那么鼠标和键盘也必须遵守USB规范，实现USB接口，否则鼠标和键盘的生产出来也无法使用。</p>
+<h3 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h3><p>进行描述笔记本类，实现笔记本使用USB鼠标、USB键盘</p>
+<ul>
+<li>USB接口，包含开启功能、关闭功能</li>
+<li>笔记本类，包含运行功能、关机功能、使用USB设备功能</li>
+<li>鼠标类，要实现USB接口，并具备点击的方法</li>
+<li>键盘类，要实现USB接口，具备敲击的方法</li>
+</ul>
+<h3 id="案例实现"><a href="#案例实现" class="headerlink" title="案例实现"></a>案例实现</h3><p>定义USB接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo04;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">USB</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">open</span><span class="params">()</span></span>;<span class="comment">// 开启功能 </span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>;<span class="comment">// 关闭功能</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义鼠标类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo04;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Mouse</span> <span class="keyword">implements</span> <span class="title">USB</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"鼠标开启，红灯闪一闪"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"鼠标关闭，红灯熄灭"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">click</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"鼠标单击"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义键盘类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">package demo04;</span><br><span class="line"></span><br><span class="line">class KeyBoard implements USB &#123;</span><br><span class="line">    public void open() &#123;</span><br><span class="line">        System.out.println(&quot;键盘开启，绿灯闪一闪&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void close() &#123;</span><br><span class="line">        System.out.println(&quot;键盘关闭，绿灯熄灭&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void type() &#123;</span><br><span class="line">        System.out.println(&quot;键盘打字&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义笔记本类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">package demo04;</span><br><span class="line"></span><br><span class="line">public class Laptop &#123;</span><br><span class="line">    &#x2F;&#x2F; 笔记本开启运行功能</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(&quot;笔记本运行&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 笔记本使用usb设备，这时当笔记本对象调用这个功能时，必须给其传递一个符合USB规则的USB设备</span><br><span class="line">    public void useUSB(USB usb) &#123;</span><br><span class="line">        &#x2F;&#x2F; 判断是否有USB设备 </span><br><span class="line">        if (usb !&#x3D; null) &#123;</span><br><span class="line">            usb.open();</span><br><span class="line">            &#x2F;&#x2F; 类型转换,调用特有方法 </span><br><span class="line">            if (usb instanceof Mouse) &#123;</span><br><span class="line">                Mouse m &#x3D; (Mouse) usb;</span><br><span class="line">                m.click();</span><br><span class="line">            &#125; else if (usb instanceof KeyBoard) &#123;</span><br><span class="line">                KeyBoard kb &#x3D; (KeyBoard) usb;</span><br><span class="line">                kb.type();</span><br><span class="line">            &#125;</span><br><span class="line">            usb.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void shutDown() &#123;</span><br><span class="line">        System.out.println(&quot;笔记本关闭&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试类，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> demo04;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建笔记本实体对象</span></span><br><span class="line">        Laptop lt = <span class="keyword">new</span> Laptop();</span><br><span class="line">        <span class="comment">// 笔记本开启</span></span><br><span class="line">        lt.run();</span><br><span class="line">        <span class="comment">// 创建鼠标实体对象</span></span><br><span class="line">        USB u = <span class="keyword">new</span> Mouse();</span><br><span class="line">        <span class="comment">// 笔记本使用鼠标</span></span><br><span class="line">        lt.useUSB(u);</span><br><span class="line">        <span class="comment">// 创建键盘实体对象</span></span><br><span class="line">        KeyBoard kb = <span class="keyword">new</span> KeyBoard();</span><br><span class="line">        <span class="comment">// 笔记本使用键盘</span></span><br><span class="line">        lt.useUSB(kb);</span><br><span class="line">        <span class="comment">// 笔记本关闭</span></span><br><span class="line">        lt.shutDown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/26/10-%E6%8E%A5%E5%8F%A3%E3%80%81%E5%A4%9A%E6%80%81/" data-id="ck88gj0cn000054ve4dfg2zct"
+        class="article-share-link">分享</a>
+        
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java%E5%9F%BA%E7%A1%80/" rel="tag">Java基础</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+    
+      <a href="/2020/03/18/8-String%E7%B1%BB%E3%80%81static%E5%85%B3%E9%94%AE%E5%AD%97%E3%80%81Arrays%E7%B1%BB%E3%80%81-Math%E7%B1%BB/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">8-String类、static关键字、Arrays类、 Math类</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        notify: false,
+        verify: '',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        LI Xingcan
+      </li>
+      <li>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Cyberspace Cloner"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Index</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">Categories</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">Tags</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="https://evolution-host.com/" target="_blank" rel="noopener">Evolution Host</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['人造的迷霓虹和爱情 在为你而重生','那一列开往银河的列车 带着时间去哪里','迷失在陌生的街头 已分不清来去'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>
